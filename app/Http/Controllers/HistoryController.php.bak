@@ -1,0 +1,597 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Company;
+use App\Device;
+use App\DeviceAssignment;
+use App\DeviceReportMessage;
+use App\DeviceSignal;
+use App\DeviceType;
+use Carbon\Carbon;
+use App\User;
+use App\UserRole;
+use Carbon\CarbonImmutable;
+use function foo\func;
+use Illuminate\Http\Request;
+use App\DeviceReport;
+use Illuminate\Support\Facades\Auth;
+use JavaScript;
+use Emerge;
+use App\Http\Services\GpsService;
+use App\Http\Services\HistoryQueryService;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
+
+class HistoryController extends Controller
+{
+    protected $perPage = 5;
+    public function index()
+    {
+        $now_time = strtotime("now");
+        session::put('refresh_time_start',$now_time);
+        $device_types = DeviceType::all()->toArray();
+        $companyArray = Company::getCompanyList();
+        //session::forget('device_reports_count');
+        // $data_for_table = $this->get_data_for_table($companyArray);
+
+        // $admin = Auth::user()->userRole->role == 'admin';
+        $admin = Auth::user()->isBranchAdmin();
+        $filter = session('company_device_history_history');
+        $page = session("company_device_history_history_page", 1);
+        Javascript::put([
+            // 'histories' => $data_for_table['company_device_history_pagination'],
+            'device_types' => $device_types,
+            'filter' => $filter,
+            'isAdmin' => $admin,
+            'currentPage'  =>  $page
+        ]);
+
+        if(session('company_history')){
+            session(['company_history' => [
+                'registered_at' => '',
+                'sb_payment_no' => '',
+                'company_name' => '',
+                'phone_number' => ''
+            ]]);
+        }
+
+        if (session('company_device_assignment_history')) {
+            session(['company_device_assignment_history' => [
+                'started_at' => null,
+                'mount_no' => null,
+                'device_model' => null,
+                'sb_billing_number' => null,
+                'group_name' => null,
+                'imei_number' => null,
+                'command_center' => null,
+                'msn' => null,
+                'receiver_number' => null,
+                'name' => null,
+                'company_name' => null,
+                'version' => null
+            ]]);
+        }
+
+        if (session("company_device_history_history_page")){
+            session(['company_device_history_history_page' => 1]);
+        }
+
+        if(session('notice_history')){
+            session(['notice_history' => [
+                'emergency_buzzer' => true,
+                'emergency_call' => true,
+                'battery_low' => true,
+                'power_off' => true
+            ]]);
+        }
+
+        if(session('history_setting_history')){
+            session(['history_setting_history' => [
+            'report_date_start' => null,
+            'report_date_end' => null,
+            'mount_no' => null,
+            'imei' => null,
+            'msn' => null
+            ]]);
+        }
+
+        return view('history.index', ['isAdmin' => $admin]);
+    }
+
+    public function listByCompany($company_id)
+    {
+        $device_types = DeviceType::all()->toArray();
+        $company = Company::query()->find($company_id);
+        $admin = Auth::user()->userRole->role == 'admin';
+        // $companyArray = array($company_id);
+        // $data_for_table = $this->get_data_for_table($companyArray);
+
+        if(!$company){
+            return back();
+        }
+        $filter = session('company_device_history_history');
+        $page = session("company_device_history_history_page", 1);
+
+        Javascript::put([
+            // 'histories' => $data_for_table['company_device_history_pagination'],
+            'device_types' => $device_types,
+            'filter' => $filter,
+            'isAdmin' => $admin,
+            'currentPage'      =>  $page,
+        ]);
+
+        return view('company.history', ['company_id' => $company_id, 'company_name' => $company->name, 'role' => Session::get('role')]);
+    }
+
+    private function get_data_for_table($companyArray = null)
+    {
+        $date = $device_model = $imei_number = $device_type_name = $group_name = $company_name = $command_center = $receiver_number = $msn = $sb_billing_number = null;
+        $emergency_buzzer = $emergency_call = $call_received = $battery_low = $power_off = $power_on = $location_inquiry = 1;
+        $connection_error = $connection_restore = 1;
+        $positioning_with_at_true = $positioning_with_at_false = true;
+
+        if (session('company_device_history_history')) {
+            $filter = session('company_device_history_history');
+
+            // $date = session('company_device_history_history')['date'];
+            // $device_model = session('company_device_history_history')['device_model'];
+            // $sb_billing_number = session('company_device_history_history')['sb_billing_number'];
+            // $group_name = session('company_device_history_history')['group_name'];
+            // $imei_number = session('company_device_history_history')['imei_number'];
+            // $command_center = session('company_device_history_history')['command_center'];
+            // $msn = session('company_device_history_history')['msn'];
+            // $receiver_number = session('company_device_history_history')['receiver_number'];
+            // $emergency_buzzer = (bool) session('company_device_history_history')['emergency_buzzer'];
+            // $emergency_call = (bool) session('company_device_history_history')['emergency_call'];
+            // $call_received = (bool)session('company_device_history_history')['call_received'];
+            // $battery_low = (bool)session('company_device_history_history')['battery_low'];
+            // $power_off = (bool)session('company_device_history_history')['power_off'];
+            // $power_on = (bool)session('company_device_history_history')['power_on'];
+            // $location_inquiry = (bool) session('company_device_history_history')['location_inquiry'];
+            // $dealt_with_at_true = (bool) session('company_device_history_history')['dealt_with_at_true'];
+            // $dealt_with_at_false = (bool) session('company_device_history_history')['dealt_with_at_false'];
+        }
+
+        $company_device_histories = $this->search($companyArray, $date, $emergency_buzzer, $emergency_call, $call_received, $power_off, $power_on,
+            $location_inquiry, $connection_error, $connection_restore, $battery_low, $device_model, $imei_number, $sb_billing_number, $group_name, $company_name, $msn, $command_center,
+            $receiver_number, $positioning_with_at_true, $positioning_with_at_false);
+
+        $company_device_histories = Emerge::customPaginate($company_device_histories, 20);
+
+
+        return [
+            'company_device_history_pagination' => $company_device_histories,
+            'filter' => $filter,
+        ];
+    }
+
+    public function searchHistory(Request $request, HistoryQueryService $query_service)
+    {
+        if (session('company_device_history_history')) {
+            $date = session('company_device_history_history')['date'];
+            $device_model = session('company_device_history_history')['device_model'];
+            $sb_billing_number = session('company_device_history_history')['sb_billing_number'];
+            $group_name = session('company_device_history_history')['group_name'];
+            $imei_number = session('company_device_history_history')['imei_number'];
+            $command_center = session('company_device_history_history')['command_center'];
+            $msn = session('company_device_history_history')['msn'];
+            $receiver_number = session('company_device_history_history')['receiver_number'];
+            $emergency_buzzer = (bool) session('company_device_history_history')['emergency_buzzer'];
+            $emergency_call = (bool) session('company_device_history_history')['emergency_call'];
+            $call_received = (bool)session('company_device_history_history')['call_received'];
+            $battery_low = (bool)session('company_device_history_history')['battery_low'];
+            $power_off = (bool)session('company_device_history_history')['power_off'];
+            $power_on = (bool)session('company_device_history_history')['power_on'];
+            $location_inquiry = (bool) session('company_device_history_history')['location_inquiry'];
+            $positioning_with_at_true = (bool) session('company_device_history_history')['positioning_with_at_true'];
+            $positioning_with_at_false = (bool) session('company_device_history_history')['positioning_with_at_false'];
+        }
+
+        // \DB::enableQueryLog();
+
+        $query = $query_service->search($request);
+        // $companyArray = Company::getCompanyList();
+
+        // if (isset($companyArray)) {
+        //     $query->doesntHave('deviceSetting')->whereHas('deviceAssignment', function ($q) use ($companyArray){
+        //         $q->whereIn('company_id', $companyArray);
+        //     })
+        //     ->orWhereHas('deviceSetting', function ($q) use ($companyArray) {
+        //         $q->whereIn('company_id', $companyArray);
+        //     });
+        // }
+
+
+
+        $company_device_histories = $query->with([
+            'deviceAssignment.sim',
+            'deviceAssignment.device.deviceType',
+            'deviceAssignment.deviceGroup',
+            'deviceAssignment.company',
+            'deviceAssignment.phones',
+            'deviceSetting.sim',
+            'deviceSetting.device.deviceType',
+            'deviceSignal',
+            'deviceSetting.deviceGroup',
+            'deviceSetting.company',
+            'deviceSetting.phones'])->orderBy('created_at', 'desc')->paginate(20);
+
+        // dd(\DB::getQueryLog());
+        $user_list =  UserRole::select('user_roles.*', 'users.id as user_id')
+            ->leftJoin('users', 'user_roles.id', '=', 'users.user_role_id')
+            ->get();
+
+        return [
+            'success' => true,
+            'data' => $company_device_histories,
+            'roles' => $user_list
+        ];
+
+    }
+
+    public function detail($history_id)
+    {
+        $history_detail = DeviceReport::where('id', $history_id)->with([
+            'deviceAssignment.sim',
+            'deviceAssignment.device.deviceType',
+            'deviceAssignment.deviceGroup',
+            'deviceAssignment.company',
+            'deviceAssignment.phones',
+            'deviceSetting.sim',
+            'deviceSetting.device.deviceType',
+            'deviceSignal',
+            'deviceSetting.deviceGroup',
+            'deviceSetting.company',
+            'deviceSetting.phones',
+            ])->first();
+
+        $isAdmin = Auth::user()->isBranchAdmin();
+        JavaScript::put([
+            'history_detail' => $history_detail,
+            'isAdmin' => $isAdmin,
+            'google_api_key'    =>  config('services.google.key'),
+            'isProduction' => config('app.env') == 'production'
+        ]);
+
+        return view('history.detail', ['isAdmin' => $isAdmin]);
+    }
+
+    public function detailForCompany($company_id, $history_id)
+    {
+        $company = Company::query()->find($company_id);
+        $history_detail = DeviceReport::query()->where('id', $history_id)->with([
+            'deviceAssignment.sim',
+            'deviceAssignment.device',
+            'deviceSignal',
+            'deviceAssignment.deviceGroup',
+            'deviceAssignment.company',
+            'deviceAssignment.phones',
+            'deviceSetting.sim',
+            'deviceSetting.device.deviceType',
+            'deviceSetting.deviceGroup',
+            'deviceSetting.company',
+            'deviceSetting.phones',
+        ])->first();
+
+        $isAdmin = Auth::user()->isAdmin();
+        JavaScript::put([
+            'history_detail' => $history_detail,
+            'isAdmin' => $isAdmin,
+            'google_api_key'    =>  config('services.google.key'),
+        ]);
+        return view('company.history_detail', [
+            'company_id' => $company_id,
+            'company_name' => $company->name,
+            'isAdmin' => Auth::user()->isAdmin(),
+        ]);
+    }
+
+    public function search($companyArray, $date, $emergency_buzzer, $emergency_call, $call_received, $power_off, $power_on,
+                           $location_inquiry, $battery_low, $device_model, $imei_number, $connect_camera_name, $camera_serial_num, $camera_connect, $sb_billing_number, $group_name, $company_name, $msn, $command_center,
+                           $receiver_number, $positoning_with_at_true, $positioning_with_at_false){
+
+        $query = DeviceReport::query();
+        if (gettype($companyArray) == "integer") {
+            $companyArray = array($companyArray);
+        }
+
+        if (isset($date)) {
+            $query->whereDate('created_at', $date);
+        }
+
+        $signal_int = [];
+        if ($emergency_buzzer)
+            $signal_int[] = DeviceSignal::$emergency_buzzer;
+
+        if ($emergency_call)
+            $signal_int[] = DeviceSignal::$emergency_call;
+
+        if ($battery_low)
+            $signal_int[] = DeviceSignal::$battery_low;
+
+        if ($power_off)
+            $signal_int[] = DeviceSignal::$power_off;
+
+        if($call_received){
+            $signal_int[] = DeviceSignal::$call_received;
+        }
+        if ($power_on)
+            $signal_int[] = DeviceSignal::$power_on;
+
+        if ($location_inquiry)
+            $signal_int[] = DeviceSignal::$location_inquiry;
+
+        if ($connection_error)
+            $signal_int[] = DeviceSignal::$connection_error;
+
+        if ($connection_restore)
+            $signal_int[] = DeviceSignal::$connection_restore;
+
+        $query->whereHas('deviceSignal', function ($q)use($signal_int){
+            $q->where('signal_int', null);
+            if($signal_int){
+                foreach ($signal_int as $id => $value) {
+                    $q->orWhere('signal_int', $value);
+                }
+            }
+        });
+
+        if (isset($companyArray)) {
+            $query->whereHas('deviceSetting', function ($q) use ($companyArray) {
+                $q->whereIn('company_id', $companyArray);
+            });
+        }
+
+        $positioning = [];
+        if ($positioning_with_at_false) {
+            array_push($positioning, DeviceReport::POSITIONING_OFF);
+        }
+        if ($positioning_with_at_true) {
+            array_push($positioning, DeviceReport::POSITIONING_ON);
+        }
+
+        $query->where(function ($q) use ($positioning) {
+            if (count($positioning) == 1) {
+                $q->where('positioning', $positioning[0]);
+            } else if (count($positioning) == 0) {
+                $q->whereNull('positioning');
+            }
+        });
+
+        if (isset($device_model)) {
+            $query->whereHas('deviceSetting.device.deviceType', function ($q) use ($device_model) {
+                $q->where('type', $device_model);
+            });
+        }
+
+        if (isset($sb_billing_number)) {
+            $query->whereHas('deviceSetting.company', function ($q) use ($sb_billing_number) {
+                $q->where('sb_payment_no', $sb_billing_number);
+            });
+        }
+
+        if (isset($group_name)) {
+            $query->whereHas('deviceSetting.deviceGroup', function ($q) use ($group_name) {
+                $q->where('name', $group_name);
+            });
+        }
+
+        if (isset($company_name)) {
+            $query->whereHas('deviceSetting.company', function ($q) use ($company_name) {
+                $q->where('name', $company_name);
+            });
+        }
+
+        if (isset($imei_number)) {
+            $query->whereHas('deviceSetting.device', function ($q) use ($imei_number) {
+                $q->where('imei', $imei_number);
+            });
+        }
+
+        if (isset($msn)) {
+            $query->whereHas('deviceSetting.sim', function ($q) use ($msn) {
+                $q->where('msn', $msn);
+            });
+        }
+
+        if (isset($command_center)) {
+            $query->whereHas('deviceSetting.phones', function ($q) use ($command_center) {
+                $q->where('phone', $command_center);
+            });
+        }
+
+        if (isset($receiver_number)) {
+            $query->whereHas('deviceSetting.phones', function ($q) use ($receiver_number) {
+                $q->where(['phone' => $receiver_number, 'auth_no' => 0]);
+            });
+        }
+
+        if(Auth::user()->userRole->role == 'user')
+        {
+            $company_id = Auth::user()->company_id;
+            $query->whereHas('deviceSetting', function($q)use($company_id){$q->where('company_id', $company_id);});
+        }
+
+        session(['company_device_history_history' =>
+            [
+                'date' => $date,
+                'emergency_buzzer' => $emergency_buzzer,
+                'emergency_call' => $emergency_call,
+                'call_received' => $call_received,
+                'power_off' => $power_off,
+                'power_on' => $power_on,
+                'battery_low' => $battery_low,
+                'location_inquiry' => $location_inquiry,
+                'connection_error' => $connection_error,
+                'connection_restore' => $connection_restore,
+                'device_model' => $device_model,
+                'sb_billing_number' => $sb_billing_number,
+                'group_name' => $group_name,
+                'imei_number' => $imei_number,
+                'command_center' => $command_center,
+                'msn' => $msn,
+                'receiver_number' => $receiver_number,
+                'positioning_with_at_true' => $positioning_with_at_true,
+                'positioning_with_at_false' => $positioning_with_at_false,
+            ]
+        ]);
+        return $query->with([
+            'deviceAssignment',
+            'deviceAssignment.connect_camera_name',
+            'deviceAssignment.camera_serial_num',
+            'deviceAssignment.camera_connect',
+            'deviceAssignment.deviceSetting.sim',
+            'deviceAssignment.deviceSetting.device.deviceType',
+            'deviceAssignment.deviceSetting.deviceGroup',
+            'deviceAssignment.deviceSetting.company',
+            'deviceAssignment.deviceSetting.phones',
+            'deviceSetting.sim',
+            'deviceSetting.device.deviceType',
+            'deviceSignal',
+            'deviceSetting.deviceGroup',
+            'deviceSetting.company',
+            'deviceSetting.phones'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+    }
+
+    public function update(Request $request, GpsService $gps_service)
+    {
+        $id = $request->post('id', null);
+        $dealt_with = $request->post('dealt_with', false);
+        $supplement = $request->post('supplement', '');
+
+        $data = [
+            'dealt_with_at' => $dealt_with ? Carbon::now() : null,
+            'supplement' => $supplement
+        ];
+
+//        if( $dealt_with ) {
+//            $data['positioning'] = 0;
+//        }
+        $report = DeviceReport::find($id);
+        if( $report ){
+            $report->fill($data)->save();
+        }
+        if( $dealt_with && $report->positioning) {
+            $gps_service->finishLocationTracking( $report );
+        }
+        $report = DeviceReport::where('id', $id)->with([
+            'deviceSetting.sim',
+            'deviceSetting.device.deviceType',
+            'deviceSignal',
+            'deviceSetting.deviceGroup',
+            'deviceSetting.company',
+            'deviceSetting.phones'
+        ])->get();
+
+        // TODO related report update as responded
+
+        return back();
+    }
+
+    public function updateNotice(Request $request){
+        $id = $request->post('id', null);
+        $dealt_with = $request->post('dealt_with', false);
+        $supplement = $request->post('supplement', '');
+
+        $data = [
+            'dealt_with_at' => $dealt_with ? Carbon::now() : null,
+            'supplement' => $supplement
+        ];
+
+        DeviceReport::query()->find($id)->fill($data)->save();
+
+        return back();
+    }
+
+    public function message($id)
+    {
+        $device_report = DeviceReport::query()->find($id);
+
+        $device_report_messages = DeviceReportMessage::query()
+            ->where('device_report_id', $id)
+            ->with(['deviceAssignment', 'deviceAssignment.company', 'deviceAssignment.sim','deviceAssignment.device', 'deviceAssignment.deviceGroup'])
+            ->get();
+
+//        dd($device_report->deviceSignal);
+
+        JavaScript::put([
+            'messages' => $device_report_messages,
+            'signal' => $device_report->deviceSignal->signal_int
+        ]);
+
+        return view('history.message');
+    }
+
+    public function monitor()
+    {
+        $now = strtotime("now");
+        $date = date("Y-m-d H:i:s",$now);
+
+        if(($now - session::get('refresh_time_start')) > 60 * 90 && ($now - session::get('refresh_time_start')) < (60 * 90 + 4))
+            return 0;
+
+        $now_device_reports_count = DB::table('device_reports')->count();
+        //var_dump(session::get('device_reports_count'));exit;
+
+        if(session::get('device_reports_count')== NULL || (session::get('device_reports_count')!= NULL && $now_device_reports_count > session::get('device_reports_count'))){
+            $history_detail = DB::table('device_reports')
+                            ->join('device_assignments','device_reports.device_assignment_id','=','device_assignments.id')
+                            ->join('companies','device_assignments.company_id','=','companies.id')
+                            ->join('users','companies.user_id','=','users.id')
+                            ->select('*', 'users.company_id as ucompany_id')
+                            ->orderby('device_reports.id','DESC')
+                            ->limit(1)
+                            ->get();
+                            //var_dump($history_detail[0]->ucompany_id);exit;
+
+            //if(($history_detail[0]->positioning == 1) && ($history_detail[0]->camera_enabled == 1) && (($history_detail[0]->device_signal_id == 1) || ($history_detail[0]->device_signal_id == 2)) && (strtotime($history_detail[0]->updated_at) >= ($now - 2))){
+            if(($history_detail[0]->positioning == 1) && ($history_detail[0]->camera_enabled == 1) && (($history_detail[0]->device_signal_id == 1) || ($history_detail[0]->device_signal_id == 2))){
+                session::put('device_reports_count',$now_device_reports_count);
+                if((session::get('user_company_id') == NULL) || (session::get('user_company_id') == $history_detail[0]->ucompany_id)){
+                    return($history_detail[0]->camera_serial);
+                }else{
+                    return -1;
+                }
+            }else{
+                session::put('device_reports_count',$now_device_reports_count);
+                return -1;
+            }
+        }else{
+            session::put('device_reports_count',$now_device_reports_count);
+            return -1;
+        }
+
+
+        /*
+        $compare_date = date("Y-m-d H:i:s",$now-60);
+        $compare_date = "2021-12-30 00:00:00";
+
+        $history_detail = DB::table('device_reports')
+                        ->join('device_assignments','device_reports.device_assignment_id','=','device_assignments.id')
+                        ->select('*')
+                        ->where('device_reports.updated_at', '>=', $compare_date)
+                        ->get()
+                        ->toArray();
+
+        $result_array = array();
+        $result_check = 0;
+        foreach($history_detail as $detail){
+            //var_dump($detail->positioning);
+            if(($detail->positioning == 1) && ($detail->camera_enabled == 1) && (($detail->device_signal_id == 1) || ($detail->device_signal_id == 2))){
+                $result_array[] = $detail->camera_serial;
+                $result_check++;
+            }else{
+                continue;
+            }
+        }
+
+        if ($result_check > 0)
+            return $result_array;
+        else
+            return -1;*/
+    }
+}

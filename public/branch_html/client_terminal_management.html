@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>端末管理</title>
+	<link href="../css/style.css" rel="stylesheet" type="text/css">
+	<script src="../js/jquery-3.1.1.min.js"></script>
+	<script src="../js/script.js"></script>
+</head>
+
+<body>
+	<main>
+		<div class="inner">
+			<section class="top_20 bottom_20">
+				<h2 class="font_20 border_title p_left10 l_height20">端末管理</h2>
+			</section>
+			<section class="search_color p1020">
+				<div class="check_box_wrap bottom_10">
+					<span class="right_10">利用開始日</span>
+					<input type="text" class="w_100 right_20" placeholder="2019/02/02">
+					<span class="right_10">機種</span>
+					<select class="w_110">
+						<option value=""></option>
+						<option value="">JPTL-401</option>
+					</select>
+					<span class="left_20 right_10">IMEI番号</span>
+					<input type="text" class="w_140">
+					<span class="left_20 right_10">グループ名</span>
+					<input type="text" class="w_350">
+				</div>
+				<div>
+					<span class="right_10">端末電話番号</span>
+					<input type="text" class="w_120 right_20" placeholder="ハイフンなし">
+					<span class="right_10">受信可能番号</span>
+					<input type="text" class="w_120 right_20" placeholder="ハイフンなし">
+					<span class="right_10">指令センター</span>
+					<input type="text" class="w_120 right_20" placeholder="ハイフンなし">
+					<a href="#" class="create_btn ss_btn">検索</a>
+				</div>
+			</section>
+			<section class="pager bottom_10 top_20 position_r">
+				<ul>
+					<li><a href="#">≪</a></li>
+					<li><a href="#">&lt;</a></li>
+					<li class="active><a href=" #">1</a></li>
+					<li><a href="#">2</a></li>
+					<li><a href="#">3</a></li>
+					<li><a href="#">4</a></li>
+					<li><a href="#">5</a></li>
+					<li><a href="#">6</a></li>
+					<li><a href="#">7</a></li>
+					<li><a href="#">8</a></li>
+					<li><a href="#">9</a></li>
+					<li><a href="#">10</a></li>
+					<li><a href="#">&gt;</a></li>
+					<li><a href="#">≫</a></li>
+				</ul>
+			</section>
+			<section class="top_10 clearfix">
+				<div class="table_left_scroll float_l w_1120">
+					<table>
+						<tr class="h_32">
+							<th class="w_60">休止</th>
+							<th class="w_60">未更新</th>
+							<th class="w_90">利用開始日</th>
+							<th class="w_90">利用終了日</th>
+							<th class="w_90">読込日</th>
+							<th class="w_50">状態</th>
+							<th class="w_50">残量</th>
+							<th class="w_120">機種</th>
+							<th class="w_160">IMEI番号</th>
+							<th class="w_120">SB請求先番号</th>
+							<th class="w_250">グループ名</th>
+							<th class="w_110">端末電話番号</th>
+							<th class="w_110">指令センター</th>
+							<th class="w_110">受信可能番号01</th>
+							<th class="w_110">受信可能番号02</th>
+							<th class="w_110">受信可能番号03</th>
+							<th class="w_90">更新日</th>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>JPTL-401</td>
+							<td>863949040086260</td>
+							<td>0000000000</td>
+							<td class="text_cut">新宿駅西口</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>000-0000-0000</td>
+							<td>2019/01/01</td>
+						</tr>
+					</table>
+				</div>
+				<div class="w_80 float_r">
+					<table>
+						<tr class="h_32">
+							<th class="w_80"></th>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="client_terminal_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</section>
+			<section class="pager top_10 position_r bottom_20">
+				<ul>
+					<li><a href="#">≪</a></li>
+					<li><a href="#">&lt;</a></li>
+					<li class="active><a href=" #">1</a></li>
+					<li><a href="#">2</a></li>
+					<li><a href="#">3</a></li>
+					<li><a href="#">4</a></li>
+					<li><a href="#">5</a></li>
+					<li><a href="#">6</a></li>
+					<li><a href="#">7</a></li>
+					<li><a href="#">8</a></li>
+					<li><a href="#">9</a></li>
+					<li><a href="#">10</a></li>
+					<li><a href="#">&gt;</a></li>
+					<li><a href="#">≫</a></li>
+				</ul>
+			</section>
+		</div>
+	</main>
+	<section class="pop modal-content" id="load">
+		<div class="pop-box top_20 position_auto auto terminal_table">
+			<table>
+				<tr class="h_39">
+					<th class="w_200 text_l p_left6">ファイル名</th>
+					<td class="text_l">
+						<form action="#" method="#">
+							<input id="download_filename" readonly type="text" value="" class="w_200">
+							<button type="button" id="download_file_button" class="ss_btn create_btn">選択</button>
+							<input id="download_file" type="file" />
+						</form>
+					</td>
+				</tr>
+			</table>
+			<p class="top_10 bottom_20">指定されたファイルをダウンロードします。よろしいですか？</p>
+			<div class="top_20">
+				<div class="text_c space">
+					<a href="#" class="details_btn l_btn space_normal right_5 modal-close">はい</a>
+					<a href="#" class="return_btn l_btn space_normal left_5 modal-close">いいえ</a>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section class="pop modal-content" id="port">
+		<div class="pop-box top_20 position_auto auto terminal_table">
+			<table>
+				<tr class="h_39">
+					<th class="w_200 text_l p_left6">ファイル名</th>
+					<td class="text_l">
+						<form action="#" method="#">
+							<input id="import_filename" readonly type="text" value="" class="w_200">
+							<button type="button" id="import_file_button" class="ss_btn create_btn">選択</button>
+							<input id="import_file" type="file" />
+						</form>
+					</td>
+				</tr>
+			</table>
+			<p class="top_10 bottom_20">指定されたファイルをインポートします。よろしいですか？</p>
+			<div class="top_20">
+				<div class="text_c space">
+					<a href="#" class="details_btn l_btn space_normal right_5 modal-close">はい</a>
+					<a href="#" class="return_btn l_btn space_normal left_5 modal-close">いいえ</a>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section class="pop modal-content" id="message">
+		<div class="pop-box top_20 position_auto auto terminal_table">
+			<table>
+				<tr class="h_39">
+					<th class="w_160 text_l p_left6">非常通報</th>
+					<td class="text_l p_left6">
+						<input type="text" class="w_300"></td>
+					</td>
+				</tr>
+				<tr class="h_39">
+					<th class="w_160 text_l p_left6">防犯ブザー</th>
+					<td class="text_l p_left6">
+						<input type="text" class="w_300"></td>
+					</td>
+				</tr>
+				<tr class="h_39">
+					<th class="w_160 text_l p_left6">電源残量</th>
+					<td class="text_l p_left6">
+						<input type="text" class="w_300"></td>
+					</td>
+				</tr>
+				<tr class="h_39">
+					<th class="w_160 text_l p_left6">電源断</th>
+					<td class="text_l p_left6">
+						<input type="text" class="w_300"></td>
+					</td>
+				</tr>
+			</table>
+			<div class="top_20">
+				<div class="text_c space">
+					<a href="#" class="details_btn l_btn space_normal right_5 modal-close">保存</a>
+					<a href="#" class="return_btn l_btn space_normal left_5 modal-close">キャンセル</a>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+
+</html>

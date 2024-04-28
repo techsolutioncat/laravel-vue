@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>契約先情報</title>
+	<link href="../css/style.css" rel="stylesheet" type="text/css">
+	<script src="../js/jquery-3.1.1.min.js"></script>
+	<script src="../js/script.js"></script>
+</head>
+
+<body>
+	<header>
+		<div class="w_100p h_70 p_fixed main_color z_99">
+			<div class=" inner clearfix h_70">
+				<div class="float_l left_10">
+					<a href="notice.html">
+						<h1 class="font_white font_25 h_70 l_height70 font_normal">エマージェ端末管理</h1>
+					</a>
+				</div>
+				<div class="float_r">
+					<ul class="text_c d_flex">
+						<li class="w_120 block border_l">
+							<a class="font_white font_14 block l_height70 textnone" href="notice.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/news.png">
+								</span>
+								<span class="font_white">
+									受信一覧
+								</span>
+							</a>
+						</li>
+						<li class="w_120 block border_l">
+							<a class="font_white font_14 block l_height70 textnone" href="history.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/history.png">
+								</span>
+								<span class="font_white">
+									履歴管理
+								</span>
+							</a>
+						</li>
+						<li class="w_120 block border_l">
+							<a class="font_white font_14 block l_height70 textnone" href="terminal_management.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/terminal.png">
+								</span>
+								<span class="font_white">
+									端末管理
+								</span>
+							</a>
+						</li>
+
+						<li class="w_120 block border_l active">
+							<a class="font_14 block l_height70 textnone" href="company_info.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/company_info.png">
+								</span>
+								<span class="font_white">
+									契約先情報
+								</span>
+							</a>
+						</li>
+						<li class="w_120 block border_l base_color">
+							<!--<a href="login.html" class="font_main font_14 l_height70 textnone">ログアウト</a>-->
+							<a href="login.html" class="font_main font_14 l_height70 textnone" id="logout_btn">ログアウト</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="h_70"></div>
+	</header>
+	<main>
+		<div class="inner">
+			<section class="top_20 bottom_20">
+				<h2 class="font_20 border_title p_left10 l_height20">契約先情報</h2>
+			</section>
+			<!-- search -->
+			<section class="search_color p1020">
+				<div>
+					<span class="right_10">登録日</span>
+					<input type="text" class="w_100 right_20" placeholder="2019/02/02">
+					<span class="right_10">SB請求先番号</span>
+					<input type="text" class="w_110 right_20">
+					<span class="right_10">会社名</span>
+					<input type="text" class="w_320 right_20">
+					<span class="right_10">電話番号</span>
+					<input type="text" class="w_110" placeholder="ハイフンなし">
+					<a href="#" class="create_btn ss_btn left_20">検索</a>
+				</div>
+			</section>
+			<!-- pager -->
+			<div class="pager bottom_10 top_20 position_r">
+				<ul class="pagination">
+					<li class="disabled"><a tabindex="-1">&lt;</a></li>
+					<li class="page-item active"><a tabindex="0">1</a></li>
+					<li class=""><a tabindex="0">&gt;</a></li>
+				</ul>
+				<div class="position_a t0r0">
+					<button data-target="modal" class="create_btn m_btn modal-open right_5"
+						style="display: none;">Excelインポート</button>
+					<button class="create_btn m_btn right_5" style="display: none;">Excelエクスポート</button>
+					<!-- 堀修正 -->
+					<!--<button class="s_btn create_btn right_5">新規作成</button>-->
+					<button class="s_btn create_btn modal-open right_5" data-target="new">新規作成</button>
+					<!-- 堀修正ここまで -->
+					<a data-v-3a17ca5a="" class="create_btn sm_btn" style="display: none;">
+						<div class="d_flex_center">
+							<div class="w_13 l_height28"><img data-v-3a17ca5a="" src="/img/garbage.png"></div>
+							<div class="l_height28"><span data-v-3a17ca5a="" class="font_white">ゴミ箱</span></div>
+						</div>
+					</a>
+				</div>
+				<div class="position_a t0l0" style="display: none;">
+					<a data-v-3a17ca5a="" href="/device" class="return_btn sm_btn">
+						<div class="d_flex_center">
+							<div class="w_13 l_height28 right_5"><img data-v-3a17ca5a="" src="/img/uturn.png">
+							</div>
+							<div class="l_height28"><span data-v-3a17ca5a="" class="font_white">戻る</span></div>
+						</div>
+					</a>
+				</div>
+			</div>
+			<!-- table -->
+			<section class="top_10">
+				<table>
+					<tr>
+						<th class="w_120">登録日</th>
+						<th class="w_120">SB請求先番号</th>
+						<th class="w_250">会社名</th>
+						<th class="w_440">住所</th>
+						<th class="w_120">電話番号</th>
+						<th class="w_80"></th>
+					</tr>
+					<tr>
+						<td>2021/00/00</td>
+						<td>0000000011</td>
+						<td class="text_cut">TEST-YOKOHAMA株式会社</td>
+						<td class="text_cut">神奈川県横浜市1-2-3</td>
+						<td>0123456789</td>
+						<td><a href="company_history_device.html" class="ss_btn details_btn">詳細</a></td>
+					</tr>
+				</table>
+			</section>
+		</div>
+	</main>
+	<section class="pop modal-content" id="new">
+		<div class="pop-box top_20 position_auto auto terminal_table">
+			<table>
+				<tr class="h_39">
+					<th class="w_200 text_l p_left6">SB請求先番号</th>
+					<td class="text_l">
+						<div class="p_left6">
+							<div class="input_wrapper"><input type="text" name="sb_payment_no" class="w_110">
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr class="h_39">
+					<th class="w_200 text_l p_left6">会社名</th>
+					<td class="text_l">
+						<div class="p_left6">
+							<div class="input_wrapper"><input type="text" name="name" class="w_350">
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr class="h_39">
+					<th class="w_200 text_l p_left6">住所</th>
+					<td class="text_l">
+						<div class="p_left6">
+							<div class="input_wrapper"><input type="text" name="address" class="w_350">
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr class="h_39">
+					<th class="w_200 text_l p_left6">電話番号</th>
+					<td class="text_l">
+						<div class="p_left6">
+							<div class="input_wrapper"><input type="text" name="phone" class="w_110">
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr class="h_39">
+					<th class="w_200 text_l p_left6">郵便番号</th>
+					<td class="text_l">
+						<div class="p_left6">
+							<div class="input_wrapper"><input type="text" name="postcode" class="w_110">
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr class="h_39">
+					<th class="w_200 text_l p_left6">総責任者名</th>
+					<td class="text_l">
+						<div class="p_left6">
+							<div class="input_wrapper"><input type="text" name="owner_name" class="w_350">
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr class="h_39">
+					<th class="w_200 text_l p_left6">総責任者メールアドレス</th>
+					<td class="text_l">
+						<div class="p_left6">
+							<div class="input_wrapper"><input type="email" name="owner_mail" class="w_350">
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr class="h_39">
+					<th class="w_200 text_l p_left6">ログインID</th>
+					<td class="text_l">
+						<div class="p_left6">
+							<div class="input_wrapper"><input type="text" name="login_id" class="w_350">
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr class="h_39">
+					<th class="w_200 text_l p_left6">パスワード</th>
+					<td class="text_l">
+						<div class="p_left6">
+							<div class="input_wrapper"><input type="password" name="password" class="w_350">
+							</div>
+						</div>
+					</td>
+				</tr>
+			</table>
+			<div class="top_20">
+				<div class="text_c space">
+					<a href="#" class="details_btn l_btn space_normal right_5 modal-close" onclick="save()">保存</a>
+					<a href="#" class="return_btn l_btn space_normal left_5 modal-close">キャンセル</a>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+
+</html>

@@ -1,0 +1,114 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+
+use App\User;
+use App\UserRole;
+use Session;
+
+class LoginController extends Controller
+{
+    /*
+    |--------------------------------------------------------------------------
+    | Login Controller
+    |--------------------------------------------------------------------------
+    |
+    | This controller handles authenticating users for the application and
+    | redirecting them to your home screen. The controller uses a trait
+    | to conveniently provide its functionality to your applications.
+    |
+    */
+
+    use AuthenticatesUsers;
+
+    public function __construct()
+    {
+        $this->middleware('guest')->except('logout');
+    }
+
+//    protected function guard()
+//    {
+//        return \Auth::guard('users');
+//    }
+
+    public function login(Request $request)
+    {
+        $this->validateLogin($request);
+
+        if ($this->attemptLogin($request)) {
+            if(Auth::user()->enabled !== 1){
+                $this->logout($request);
+            } else {
+                $user_role = UserRole::where('id', '=', Auth::user()->user_role_id)->get();
+                $role = (count($user_role) > 0)? $user_role[0]['auth']: 0;
+
+                Session::put('user_id', Auth::user()->id);
+                Session::put('user_role_id', Auth::user()->user_role_id);
+                Session::put('role', $role);
+                Session::put('user_company_id', Auth::user()->company_id);
+                
+                return $this->sendLoginResponse($request);
+            }
+        }
+
+        // If the login attempt was unsuccessful we will increment the number of attempts
+        // to login and redirect the user back to the login form. Of course, when this
+        // user surpasses their maximum number of attempts they will get locked out.
+        $this->incrementLoginAttempts($request);
+
+        return $this->sendFailedLoginResponse($request);
+    }
+
+    /**
+     * Validate the user login request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function validateLogin(Request $request)
+    {
+        $request->validate([
+            $this->username() => 'required|string',
+            'password' => 'required|string',
+        ]);
+    }
+
+    public function sendFailedLoginResponse(Request $request)
+    {
+        $username = $this->username();
+        $value = $request->get($username, '');
+        $usernameIsInvalid = User::query()->where($username, $value)->count() == 0;
+        $key = 'auth.failed';
+        if ($usernameIsInvalid)
+        {
+            $key = 'auth.username.invalid';
+        }
+
+        throw ValidationException::withMessages([
+//            $this->username() => [trans($key)],
+            'message' => [trans($key)],
+        ]);
+    }
+
+    public function username()
+    {
+        return 'login_id';
+    }
+
+    public function index()
+    {
+        return view('auth.login');
+    }
+
+    protected function redirectTo() {
+        return '/login';
+    }
+}

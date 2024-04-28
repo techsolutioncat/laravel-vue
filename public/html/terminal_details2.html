@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>端末詳細</title>
+	<link href="../css/style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+	<header>
+		<!-- ローディング画面 -->
+		<div id="loading">
+			<div class="half-circle-spinner">
+				<div class="circle circle-1"></div>
+				<div class="circle circle-2"></div>
+			  </div>
+		</div>
+		<div class="w_100p h_70 p_fixed main_color z_99">
+			<div class=" inner clearfix h_70">
+				<div class="float_l left_10">
+					<a href="notice.html">
+						<h1 class="font_white font_25 h_70 l_height70 font_normal">エマージェ端末管理</h1>
+					</a>
+				</div>
+				<div class="float_r">
+					<ul class="text_c d_flex">
+						<li class="w_120 block border_l">
+							<a class="font_white font_14 block l_height70 textnone" href="history.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/history.png">
+								</span>
+								<span class="font_white">
+									履歴管理
+								</span>
+							</a>
+						</li>
+						<li class="w_120 block border_l active">
+							<a class="font_white font_14 block l_height70 textnone" href="terminal_management.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/terminal.png">
+								</span>
+								<span class="font_white">
+									端末管理
+								</span>
+							</a>
+						</li>
+						<li class="w_120 block border_l">
+							<a class="font_white font_14 block l_height70 textnone" href="admin.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/admin.png">
+								</span>
+								<span class="font_white">
+									管理者管理
+								</span>
+							</a>
+						</li>
+						<li class="w_120 block border_l">
+							<a class="font_14 block l_height70 textnone" href="company_info.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/company_info.png">
+								</span>
+								<span class="font_white">
+									契約先情報
+								</span>
+							</a>
+						</li>
+						<li class="w_120 block border_l base_color">
+							<!--<a href="login.html" class="font_main font_14 l_height70 textnone">ログアウト</a>-->
+							<a href="login.html" class="font_main font_14 l_height70 textnone" id="logout_btn">ログアウト</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="h_70"></div>
+	</header>
+	<main>
+		<div class="inner">
+			<section class="top_20 bottom_20">
+				<h2 class="font_20 border_title p_left10 l_height20">端末詳細</h2>
+			</section>
+			<section class="pager bottom_10 top_20 text_r">
+				<button class="block s_btn create_btn right_10 modal-open" data-target="stop">ブザー停止</button>
+				<button class="block m_btn create_btn right_10 modal-open" data-target="pronouncement">確認ブザー発報</button>
+				<button class="s_btn create_btn modal-open" data-target="clone">クローン</button>
+			</section>
+			<!-- table -->
+			<section class="top_10">
+				<table>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">休止設定</th>
+						<td class="w_400 text_l">
+							<div class="radio p_left6">
+								<input type="radio" name="radio" class="radio-input" id="enable">
+								<label for="enable">
+									<span class="p_left10">有効</span>
+								</label>
+								<input type="radio" name="radio" class="radio-input" id="disable">
+								<label for="disable">
+									<span class="p_left10">無効</span>
+								</label>
+							</div>
+						</td>
+						<th class="w_200 item">SB請求先番号</th>
+						<td class="w_400 item">
+							1111111111
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 item">未更新</th>
+						<td class="w_400 item">
+							<div class="w_20 text_l left_6">
+								<img src="../img/note.png">
+							</div>
+						</td>
+						<th class="w_200 item">端末電話番号</th>
+						<td class="item">
+							<div>
+								<span class="right_5">番号</span>
+								<span class="w_90 d_inline_flex"></span>
+								<a class="xs_btn delete_btn" href="./terminal_details2.html">クリア</a>
+							</div>
+							<div class="top_5">
+								<span class="right_5">名称</span>
+								<input type="text" class="w_190">
+							</div>
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 item">架.No</th>
+						<td class="w_400 item">
+							<input type="text" class="w_110">
+						</td>
+						<th class="w_200 item">端末発信設定</th>
+						<td class="item">
+							<span class="right_5">番号</span>
+							<input type="text" class="w_110">
+							<span class="right_5 left_10">名称</span>
+							<input type="text" class="w_190">
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 item">利用開始日</th>
+						<td class="w_400 item">
+							<span>2019/02/01</span>
+						</td>
+						<th class="w_200 item">着信可能設定01</th>
+						<td class="item">
+							<span class="right_5">番号</span>
+							<input type="text" class="w_110">
+							<span class="right_5 left_10">名称</span>
+							<input type="text" class="w_190">
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 item">利用終了日</th>
+						<td class="w_400 item">
+							<span>2020/02/02</span>
+						</td>
+						<th class="w_200 item">着信可能設定02</th>
+						<td class="item">
+							<span class="right_5">番号</span>
+							<input type="text" class="w_110">
+							<span class="right_5 left_10">名称</span>
+							<input type="text" class="w_190">
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 item">読込日</th>
+						<td class="w_400 item">
+							<span>2019/02/01</span>
+						</td>
+						<th class="w_200 item">着信可能設定03</th>
+						<td class="item">
+							<span class="right_5">番号</span>
+							<input type="text" class="w_110">
+							<span class="right_5 left_10">名称</span>
+							<input type="text" class="w_190">
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 item">更新日</th>
+						<td class="w_400 item">
+							<span>2019/02/01</span>
+						</td>
+						<th class="w_200 item">着信可能設定04</th>
+						<td class="item">
+							<span class="right_5">番号</span>
+							<input type="text" class="w_110">
+							<span class="right_5 left_10">名称</span>
+							<input type="text" class="w_190">
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 item">電源状態</th>
+						<td class="w_400 item">
+							<span>OFF</span>
+						</td>
+						<th class="w_200 item">着信可能設定05</th>
+						<td class="item">
+							<span class="right_5">番号</span>
+							<input type="text" class="w_110">
+							<span class="right_5 left_10">名称</span>
+							<input type="text" class="w_190">
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 item">BAT残量</th>
+						<td class="w_400 item">
+							<span>30%</span>
+						</td>
+						<th class="w_200 item">着信可能設定06</th>
+						<td class="item">
+							<span class="right_5">番号</span>
+							<input type="text" class="w_110">
+							<span class="right_5 left_10">名称</span>
+							<input type="text" class="w_190">
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 item">機種</th>
+						<td class="w_400 item">
+							<span>JPTL-401</span>
+						</td>
+						<th class="w_200 item">着信可能設定07</th>
+						<td class="item">
+							<span class="right_5">番号</span>
+							<input type="text" class="w_110">
+							<span class="right_5 left_10">名称</span>
+							<input type="text" class="w_190">
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 item">IMEI番号</th>
+						<td class="w_400 item">
+							<span>863949040086260</span>
+						</td>
+						<th class="w_200 item">着信可能設定08</th>
+						<td class="item">
+							<span class="right_5">番号</span>
+							<input type="text" class="w_110">
+							<span class="right_5 left_10">名称</span>
+							<input type="text" class="w_190">
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 item">グループ名</th>
+						<td class="w_400 item">
+							<textarea class="auto-resize textarea resize"></textarea>
+						</td>
+						<th class="w_200 item">着信可能設定09</th>
+						<td class="item">
+							<span class="right_5">番号</span>
+							<input type="text" class="w_110">
+							<span class="right_5 left_10">名称</span>
+							<input type="text" class="w_190">
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 item">会社名</th>
+						<td class="w_400 item">
+							<input type="text" class="w_100p">
+						</td>
+						<th class="w_200 item">着信可能設定10</th>
+						<td class="item">
+							<span class="right_5">番号</span>
+							<input type="text" class="w_110">
+							<span class="right_5 left_10">名称</span>
+							<input type="text" class="w_190">
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 item">緊急通報</th>
+						<td class="w_400 item">
+							<textarea class="auto-resize textarea resize"></textarea>
+						</td>
+						<th class="w_200 item">バッテリー低下</th>
+						<td class="w_400 item">
+							<textarea class="auto-resize textarea resize"></textarea>
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 item">緊急ブザー</th>
+						<td class="w_400 item">
+							<textarea class="auto-resize textarea resize"></textarea>
+						</td>
+						<th class="w_200 item">電源OFF</th>
+						<td class="w_400 item">
+							<textarea class="auto-resize textarea resize"></textarea>
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">利用状況</th>
+						<td class="text_l title" >
+							<div class="radio p_left6">
+								<input type="radio" name="radio" class="radio-input" id="enable">
+								<label for="enable">
+									<span class="p_left10">利用中</span>
+								</label>
+								<input type="radio" name="radio" class="radio-input" id="disable">
+								<label for="disable">
+									<span class="p_left10">利用停止</span>
+								</label>
+							</div>
+						</td>
+						<th class="w_200 item" rowspan="2">端末バージョン</th>
+						<td class="w_400 item" rowspan="2">
+							<div class="bottom_10 p_bottom10 border_d-c d_flex d_flex-center p_top10">
+								<span class="right_5">現状：</span>
+								<span class="inblock font_18 purpose font_bold right_10">固定用</span>
+								<span class="inblock font_18 right_20">210310</span>
+								<button class="create_btn ss_btn">初期化</button>
+							</div>
+							<div class="bottom_10 d_flex p_bottom10 border_d-c">
+								<span class="right_5">運搬用：</span>
+								<div>
+									<div class="bottom_5">
+										<button  class="create_btn ll_btn">アップデート後に本番移行</button>
+									</div>
+									<div>
+										<button class="create_btn ll_btn">アップデート後にテスト移行</button>
+									</div>
+								</div>
+							</div>
+							<div class="bottom_10 d_flex">
+								<span class="right_5">固定用：</span>
+								<div>
+									<div class="bottom_5">
+										<button href="#" class="create_btn ll_btn disabled_btn" disable>アップデート後に本番移行</button>
+									</div>
+									<div>
+										<button href="#" class="create_btn ll_btn disabled_btn" disable>アップデート後にテスト移行</button>
+									</div>
+								</div>
+							</div>
+							<div class="hitokoto">
+								<p>「固定用」のFWをアップデートするには<br>FWバージョンが<span>「220111」以降</span>の必要がございます</p>
+								<p>一度「運搬用」をアップデート実行後に<br>「固定用」のアップデートを実行してください</p>
+							</div>
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 item">環境紐付け</th>
+						<td class="w_400 item">
+							<button class="create_btn s_btn right_10">本番に移行</button><button class="create_btn s_btn">テストに移行</button>
+						</td>
+					</tr>
+				</table>	
+			</section>
+			<section class="top_30 bottom_10">
+				<h2 class="font_20 border_title p_left10 l_height20">カメラ連携項目詳細</h2>
+			</section>
+			<section class="bottom_20">
+				<table>
+					<tr class="h_39">
+						<th class="w_200 item">接続カメラ名</th>
+						<td class="w_400 item">
+							<textarea class="auto-resize textarea resize"></textarea>
+						</td>
+						<th class="w_200 item">カメラシリアル番号</th>
+						<td class="w_400 item">
+							<input type="text" class="w_110">
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">カメラシステム連携</th>
+						<td class="w_400 text_l" colspan="3">
+							<div class="radio p_left6">
+								<input type="radio" name="radio2" class="radio-input" id="enable２" checked>
+								<label for="enable２">
+									<span class="p_left10">有効</span>
+								</label>
+								<input type="radio" name="radio2" class="radio-input" id="disable２">
+								<label for="disable２">
+									<span class="p_left10">無効</span>
+								</label>
+							</div>
+						</td>
+					</tr>			
+				</table>
+				
+				
+			</section>
+			<section class="top_30 bottom_10">
+				<h2 class="font_20 border_title p_left10 l_height20">カメラ連携項目詳細</h2>
+			</section>
+			<section class="bottom_20">
+				<table>
+					<tr class="h_39">
+						<th class="w_200 item">接続カメラ名</th>
+						<td class="w_400 item">
+							<textarea class="auto-resize textarea resize"></textarea>
+						</td>
+						<th class="w_200 item">カメラシリアル番号</th>
+						<td class="w_400 item">
+							<input type="text" class="w_110">
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">カメラシステム連携</th>
+						<td class="w_400 text_l" colspan="3">
+							<div class="radio p_left6">
+								<input type="radio" name="radio2" class="radio-input" id="enable２" checked>
+								<label for="enable２">
+									<span class="p_left10">有効</span>
+								</label>
+								<input type="radio" name="radio2" class="radio-input" id="disable２">
+								<label for="disable２">
+									<span class="p_left10">無効</span>
+								</label>
+							</div>
+						</td>
+					</tr>			
+				</table>
+			</section>
+			</section>
+			
+			<div class="text_c space top_20 bottom_20">
+				<a href="terminal_management.html" class="delete_btn l_btn space_normal right_10 modal-close">削除</a>
+				<a href="terminal_management.html" class="details_btn l_btn space_normal right_10"
+					onclick="save()">保存</a>
+				<a href="terminal_management.html" class="return_btn l_btn space_normal right_10">戻る</a>
+			</div>		
+		</div>
+	</main>
+	<!-- modal -->
+	<section class="pop modal-content" id="stop">
+		<div class="pop-box top_20 position_auto auto">
+			<p class="text_c">現状作動しているブザーを遠隔で停止さいたします。<br>ブザー停止させる端末はこちらでよろしいですか？</p>
+			<div class="top_20">
+				<div class="text_c">
+					<a href="#" class="details_btn l_btn space_normal right_5 modal-close">はい</a>
+					<a href="#" class="return_btn l_btn space_normal left_5 modal-close">いいえ</a>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section class="pop modal-content" id="pronouncement">
+		<div class="pop-box top_20 position_auto auto">
+			<p class="text_c">この端末の確認ブザーをこちらの管理画面から発報いたします。<br>この端末でよろしいですか？</p>
+			<div class="top_20">
+				<div class="text_c">
+					<a href="#" class="details_btn l_btn space_normal right_5 modal-close">はい</a>
+					<a href="#" class="return_btn l_btn space_normal left_5 modal-close">いいえ</a>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section class="pop modal-content" id="clone">
+		<div class="pop-box top_20 position_auto auto terminal_table">
+			<div>
+				<div class="search_color p1020">
+					<span class="right_5">端末電話番号</span>
+					<input tepy="text" value="" class="w_110">
+					<span class="right_5 left_20">架.No</span>
+					<input tepy="text" value="" class="w_110">
+					<input type="button" value="検索" class="create_btn ss_btn left_20" data-target="test" id="search">
+				</div>
+			</div>
+			<div class="top_20"><span class="block font_18 text_c bottom_5">対象端末情報</span>
+				<table>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">架.No</th>
+						<td class="text_l p_left6 w_460"><span></span></td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">利用開始日</th>
+						<td class="text_l p_left6 w_460"><span></span></td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">利用終了日</th>
+						<td class="text_l p_left6 w_460"><span></span></td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">機種</th>
+						<td class="text_l p_left6 w_460"><span></span></td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">IMEI番号</th>
+						<td class="text_l p_left6 w_460"><span></span></td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">SB請求先番号</th>
+						<td class="text_l p_left6 w_460"><span></span></td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">会社名</th>
+						<td class="text_l p_left6 w_460"><span></span></td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">グループ名</th>
+						<td class="text_l p_left6 w_460"><span></span></td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">端末電話番号</th>
+						<td class="item"><span class="right_5">番号</span> <span class="right_20"></span>
+							<div class="inblock"><span class="right_5">名称</span>
+								<div class="inblock"><span></span></div>
+							</div>
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">着信可能設定01</th>
+						<td class="item"><span class="right_5">番号</span> <span class="right_20"></span>
+							<div class="inblock"><span class="right_5">名称</span> <span></span></div>
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">着信可能設定02</th>
+						<td class="item"><span class="right_5">番号</span> <span class="right_20"></span>
+							<div class="inblock"><span class="right_5">名称</span> <span></span></div>
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">着信可能設定03</th>
+						<td class="item"><span class="right_5">番号</span> <span class="right_20"></span>
+							<div class="inblock"><span class="right_5">名称</span> <span></span></div>
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">着信可能設定04</th>
+						<td class="item"><span class="right_5">番号</span> <span class="right_20"></span>
+							<div class="inblock"><span class="right_5">名称</span> <span></span></div>
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">着信可能設定05</th>
+						<td class="item"><span class="right_5">番号</span> <span class="right_20"></span>
+							<div class="inblock"><span class="right_5">名称</span> <span></span></div>
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">着信可能設定06</th>
+						<td class="item"><span class="right_5">番号</span> <span class="right_20"></span>
+							<div class="inblock"><span class="right_5">名称</span> <span></span></div>
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">着信可能設定07</th>
+						<td class="item"><span class="right_5">番号</span> <span class="right_20"></span>
+							<div class="inblock"><span class="right_5">名称</span> <span></span></div>
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">着信可能設定08</th>
+						<td class="item"><span class="right_5">番号</span> <span class="right_20"></span>
+							<div class="inblock"><span class="right_5">名称</span> <span></span></div>
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">着信可能設定09</th>
+						<td class="item"><span class="right_5">番号</span> <span class="right_20"></span>
+							<div class="inblock"><span class="right_5">名称</span> <span></span></div>
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">着信可能設定10</th>
+						<td class="item"><span class="right_5">番号</span> <span class="right_20"></span>
+							<div class="inblock"><span class="right_5">名称</span> <span></span></div>
+						</td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">緊急通報</th>
+						<td class="item"><span></span></td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">緊急ブザー</th>
+						<td class="item"><span></span></td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">バッテリー低下</th>
+						<td class="item"><span></span></td>
+					</tr>
+					<tr class="h_39">
+						<th class="w_200 text_l p_left6">電源OFF</th>
+						<td class="item"><span></span></td>
+					</tr>
+				</table>
+				<div class="top_20 bottom_20">
+					<div class="text_c space"><a id="close" class="details_btn l_btn space_normal right_10 modal-close"
+							style="display: none;">
+							反映
+						</a> <a id="close2" class="return_btn l_btn space_normal modal-close">キャンセル</a></div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<script src="../js/jquery-3.1.1.min.js"></script>
+	<script src="../js/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,234 @@
+<?php
+
+namespace App;
+
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Company;
+class DeviceAssignment extends Model
+{
+    use SoftDeletes;
+
+    protected $fillable = [
+        'id',
+        'sim_id',
+        'device_id',
+        'device_setting_id',
+        'device_group_id',
+        'company_id',
+        'name',
+        'mount_no',
+        'rest',
+        'active',
+        'battery',
+        'applied_at',
+        'started_at',
+        'ended_at',
+        'restored_at',
+        'deleted_at',
+    ];
+
+    protected $appends = ['updated_at_date', 'emergency_call', 'emergency_buzzer', 'battery_low', 'power_off'];
+
+    protected $hidden = [];
+
+    public function sim() {
+        return $this->belongsTo(Sim::class)->withDefault();
+    }
+
+    public function device() {
+        return $this->belongsTo(Device::class)->withDefault();
+    }
+    public function deviceSim() {
+        return $this->belongsTo(DeviceSim::class)->withDefault();
+    }
+
+    public function deviceGroup() {
+        return $this->belongsTo(DeviceGroup::class)->withDefault();
+    }
+
+    public function company() {
+        return $this->belongsTo(Company::class)->withDefault();
+    }
+
+    public function phones() {
+        return $this->hasMany(Phone::class,'device_assignment_id');
+    }
+
+    public function user() {
+        return $this->belongsTo(User::class)->withDefault();
+    }
+
+    public function deviceSetting() {
+        return $this->belongsTo(DeviceSetting::class)->withDefault();
+    }
+
+    public function getEmergencyCallAttribute(){
+        return Message::query()->firstOrCreate([
+                'device_assignment_id'=> $this->attributes['id'],
+                'device_signal_id'=>2 // call = 2
+            ],['message'=>'']);
+    }
+    
+    public function getEmergencyBuzzerAttribute(){
+        return Message::query()->firstOrCreate([
+            'device_assignment_id'=> $this->attributes['id'],
+            'device_signal_id'=>1 // buzzer = 1
+        ],['message'=>'']);
+    }
+
+    public function getBatteryLowAttribute(){
+        return Message::query()->firstOrCreate([
+            'device_assignment_id'=> $this->attributes['id'],
+            'device_signal_id'=>3
+        ],['message'=>'']);
+    }
+
+    public function getPowerOffAttribute(){
+        return Message::query()->firstOrCreate([
+            'device_assignment_id'=> $this->attributes['id'],
+            'device_signal_id'=>4
+        ],['message'=>'']);
+    }
+
+    public function getUpdatedAtDateAttribute(){
+        return $this->attributes['updated_at'] ? Carbon::parse($this->attributes['updated_at'])->format('Y/m/d') : null;
+    }
+    public function getStartedAtAttribute(){
+        return $this->attributes['started_at'] ? Carbon::parse($this->attributes['started_at'])->format('Y/m/d') : null;
+    }
+    public function getEndedAtAttribute(){
+        return $this->attributes['ended_at'] ? Carbon::parse($this->attributes['ended_at'])->format('Y/m/d') : null;
+    }
+    public function getRestoredAtAttribute(){
+        return $this->attributes['restored_at'] ? Carbon::parse($this->attributes['restored_at'])->format('Y/m/d') : null;
+    }
+    public function getDeletedAtAttribute(){
+        return $this->attributes['deleted_at'] ? Carbon::parse($this->attributes['deleted_at'])->format('Y/m/d') : null;
+    }
+    public function getAppliedAtAttribute(){
+        return $this->attributes['applied_at'] ? Carbon::parse($this->attributes['applied_at'])->format('Y/m/d') : null;
+    }
+
+    public function scopeHasDeviceSim(Builder $query, $imei, $msn): Builder
+    {
+        $sim =
+            Sim::query()
+                ->where('msn', 'LIKE', $msn)
+                ->get('iccid')->toArray();
+
+        $device_sim =
+            DeviceSim::query()
+                ->where('device_imei', 'LIKE', $imei)
+                ->whereIn('sim_iccid', $sim)
+                ->get()->getQueueableIds();
+
+        return $query
+            ->whereIn('device_sim_id',  $device_sim);
+    }
+
+    public function scopeHasPhone(Builder $query, $auth_phone): Builder
+    {
+        $phone =
+            Phone::query()
+                ->where('phone', 'LIKE', $auth_phone)
+                ->get();
+
+        $assignment_id = $phone->map(function ($p) {
+            return $p['device_assignment_id'];
+        });
+
+        return $query
+            ->whereIn('id', $assignment_id->toArray());
+    }
+
+    public function scopeHasOperatorPhone(Builder $query, $operator_phone): Builder
+    {
+        $phone =
+            Phone::query()
+                ->where('phone', 'LIKE', $operator_phone)
+                ->where('auth_no', 'LIKE', 0)
+                ->get();
+
+        $assignment_id = $phone->map(function ($p) {
+            return $p['device_assignment_id'];
+        });
+
+        return $query
+            ->whereIn('id', $assignment_id->toArray());
+    }
+
+    public function data()
+    {
+        $this['date']
+            = (new Carbon($this->updated_at))->format('Y/m/d');
+        $this['time']
+            = (new Carbon($this->updated_at))->format('H:i:s');
+        $this['started_at']
+            = $this->started_at != null ?
+            (new Carbon($this->started_at))->format('Y/m/d') : null;
+        $this['ended_at']
+            = $this->ended_at != null ?
+            (new Carbon($this->ended_at))->format('Y/m/d') : null;
+        $this['restored_at']
+            = $this->restored_at != null ?
+            (new Carbon($this->restored_at))->format('Y/m/d') : null;
+        $this['applied_at']
+            = $this->applied_at != null ?
+            (new Carbon($this->applied_at))->format('Y/m/d') : null;
+
+
+        $this['device_type'] = $this->device->deviceType;
+        $this['device'] = $this->device;
+        $this['device_sim'] = $this->sim;
+        $this['device_group'] = $this->deviceGroup;
+        $this['device_company'] = $this->company;
+        $this['using'] = $this->ended_at == null;
+
+        $this['emergency_call']
+            = Message::query()
+            ->firstOrCreate([
+                'device_assignment_id'=> $this->id,
+                'device_signal_id'=>1
+                ],['message'=>'']);
+        $this['emergency_buzzer']
+            = Message::query()
+            ->firstOrCreate([
+                'device_assignment_id'=> $this->id,
+                'device_signal_id'=>2
+            ],['message'=>'']);
+        $this['battery_low']
+            = Message::query()
+            ->firstOrCreate([
+                'device_assignment_id'=> $this->id,
+                'device_signal_id'=>3
+            ],['message'=>'']);
+        $this['power_off']
+            = Message::query()
+            ->firstOrCreate([
+                'device_assignment_id'=> $this->id,
+                'device_signal_id'=>4
+            ],['message'=>'']);
+
+        $devicePhones = $this->phones;
+        $phones = [];
+        for($i=0; $i<11; $i++){
+            $phones[] = $devicePhones->get(
+                $i,
+                ['phone' => '', 'name' => '']
+            );
+        }
+        $this['device_phones'] = $phones;
+
+        return $this;
+    }
+
+    public static function getAll()
+    {
+        $companyArray = Company::getCompanyList();
+        $deviceAssignmentArray = DeviceAssignment::all()->whereIn('company_id', $companyArray);
+        return $deviceAssignmentArray;
+    }
+}

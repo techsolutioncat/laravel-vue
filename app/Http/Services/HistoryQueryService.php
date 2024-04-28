@@ -1,0 +1,270 @@
+<?php
+namespace App\Http\Services;
+
+use App\DeviceReport;
+use App\DeviceSignal;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Collection;
+use App\Company;
+class HistoryQueryService {
+
+    public function search(Request $request){       
+        $date = $request->input('date');
+        $rtc_time = $request->input('rtc_time');
+        $emergency_buzzer = $request->boolean('emergency_buzzer');
+        $emergency_call = $request->boolean('emergency_call');
+        $call_received = $request->boolean('call_received');
+        $battery_low = $request->boolean('battery_low');
+        $power_off = $request->boolean('power_off');
+        $power_on = $request->boolean('power_on');
+        $location_inquiry = $request->boolean('location_inquiry');
+        $connection_error = $request->boolean('connection_error');
+        $connection_restore = $request->boolean('connection_restore');
+        $group_name = $request->input('group_name');
+        $sb_billing_number = $request->input('sb_billing_number');
+        $device_model = $request->input('device_model');
+        $company_name = $request->input('company_name');
+        $imei_number = $request->input('imei_number');
+        $command_center = $request->input('command_center');
+        $msn = $request->input('msn');
+        $receiver_number = $request->input('receiver_number');
+        $positioning_with_at_true = $request->boolean('positioning_with_at_true');
+        $positioning_with_at_false = $request->boolean('positioning_with_at_false');
+        $company_id = $request->input('company_id');
+        $mount_no = $request->input('mount_no');
+        $query = DeviceReport::query();
+
+        // if (!empty($date)) {
+        //     $query->whereDate('created_at', $date);
+        //     // $query->whereDate('rtc_time', $date);
+        // }
+        // if (!empty($rtc_time)) {
+        //     $query->whereDate('rtc_time', $rtc_time);
+        // }
+        $signal_int = [];
+        if ($emergency_buzzer == "true" ){
+            $signal_int[] = DeviceSignal::$emergency_buzzer;
+        }
+        if ($emergency_call )
+            $signal_int[] = DeviceSignal::$emergency_call;
+
+        if ($battery_low )
+            $signal_int[] = DeviceSignal::$battery_low;
+
+        if ($power_off )
+            $signal_int[] = DeviceSignal::$power_off;
+
+        if($call_received ){
+            $signal_int[] = DeviceSignal::$call_received;
+        }
+        if ($power_on )
+            $signal_int[] = DeviceSignal::$power_on;
+
+        if ($location_inquiry )
+            $signal_int[] = DeviceSignal::$location_inquiry;
+        
+        if ($connection_error )
+            $signal_int[] = DeviceSignal::$connection_error;
+
+        if ($connection_restore )
+            $signal_int[] = DeviceSignal::$connection_restore;
+        
+        // if ( count( $signal_int ) ) {
+        //     $query->whereHas('deviceSignal', function ($q) use ($signal_int){
+        //         $q->whereIn('signal_int', $signal_int);
+        //         // if($signal_int){
+        //         //     foreach ($signal_int as $id => $value) {
+        //         //         $q->orWhere('signal_int', $value);
+        //         //     }
+        //         // }
+        //     });
+        // }
+
+        $positioning = [];
+        if ($positioning_with_at_false) {
+            array_push($positioning, DeviceReport::POSITIONING_OFF);
+        }
+        if ($positioning_with_at_true) {
+            array_push($positioning, DeviceReport::POSITIONING_ON);
+        }
+        
+        $companyArray = Company::getCompanyList();
+
+        $query->where(function ($query) use ($date, $rtc_time, $signal_int, $positioning, $company_id, $company_name, $mount_no, $device_model, $sb_billing_number, 
+        $group_name, $imei_number, $msn, $command_center, $receiver_number, $companyArray){
+            $query->whereNotNull('device_setting_id')->when($date, function($q) use ($date){ $q->whereDate('created_at', $date);})
+            ->when($rtc_time, function($q) use ($rtc_time){ $q->whereDate('rtc_time', $rtc_time);})
+            ->when(count($signal_int), function($q) use ($signal_int) {
+                $q->whereHas('deviceSignal', function ($q) use ($signal_int){
+                    $q->whereIn('signal_int', $signal_int);
+                });
+            })
+            ->when(isset($positioning), function($q) use ($positioning){ 
+                if (count($positioning) == 1) {
+                    $q->where('positioning', $positioning[0]);
+                } else if (count($positioning) == 0) {
+                    $q->whereNull('positioning');
+                }
+            })->when($company_id, function ($query) use ($company_id){
+                $query->whereHas('deviceSetting', function ($q) use ($company_id){
+                    $q->where('company_id', $company_id);
+                });
+            })->when(!$company_id, function ($query) use ($companyArray){
+                $query->whereHas('deviceSetting.company', function ($q) use ($companyArray){
+                    $q->whereIn('id', $companyArray);
+                });
+            })->when($company_name, function ($query) use ($company_name, $companyArray){
+                $query->whereHas('deviceSetting.company', function ($q) use ($company_name, $companyArray){
+                    $q->where('name', $company_name)->whereIn('id', $companyArray);
+                });
+            })->when($mount_no, function ($query) use ($mount_no){
+                $query->whereHas('deviceSetting', function ($q) use ($mount_no){
+                    $q->where('mount_no', $mount_no);
+                });
+            })->when($device_model, function ($query) use ($device_model){
+                $query->whereHas('deviceSetting.device.deviceType', function ($q) use ($device_model){
+                    $q->where('type', $device_model);
+                });
+            })->when($sb_billing_number, function ($query) use ($sb_billing_number){
+                $query->whereHas('deviceSetting.company', function ($q) use ($sb_billing_number){
+                    $q->where('sb_payment_no', $sb_billing_number);
+                });
+            })->when($group_name, function ($query) use ($group_name){
+                $query->whereHas('deviceSetting.deviceGroup', function ($q) use ($group_name){
+                    $q->where('name', $group_name);
+                });
+            })->when($imei_number, function ($query) use ($imei_number){
+                $query->whereHas('deviceSetting.device', function ($q) use ($imei_number){
+                    $q->where('imei', $imei_number);
+                });
+            })->when($msn, function ($query) use ($msn){
+                $query->whereHas('deviceSetting.sim', function ($q) use ($msn){
+                    $q->where('msn', $msn);
+                });
+            })->when($command_center, function ($query) use ($command_center){
+                $query->whereHas('deviceSetting.phones', function ($q) use ($command_center){
+                    $q->where(['phone' => $command_center, 'auth_no' => 0]);
+                });
+            })->when($receiver_number, function ($query) use ($receiver_number){
+                $query->whereHas('deviceSetting.phones', function ($q) use ($receiver_number){
+                    $q->where('phone', $receiver_number);
+                });
+        });
+        })->orWhere(function ($query) use ($date, $rtc_time, $signal_int, $positioning, $company_id, $company_name, $mount_no, $device_model, $sb_billing_number, 
+        $group_name, $imei_number, $msn, $command_center, $receiver_number, $companyArray){
+            $query->whereNull('device_setting_id')->when($date, function($q) use ($date){ $q->whereDate('created_at', $date);})
+            ->when($rtc_time, function($q) use ($rtc_time){ $q->whereDate('rtc_time', $rtc_time);})
+            ->when(count($signal_int), function($q) use ($signal_int) {
+                $q->whereHas('deviceSignal', function ($q) use ($signal_int){
+                    $q->whereIn('signal_int', $signal_int);
+                });
+            })->when(isset($positioning), function($q) use ($positioning){ 
+                if (count($positioning) == 1) {
+                    $q->where('positioning', $positioning[0]);
+                } else if (count($positioning) == 0) {
+                    $q->whereNull('positioning');
+                }
+            })->when($company_id, function ($query) use ($company_id){
+                $query->whereHas('deviceAssignment', function ($q) use ($company_id){
+                    $q->where('company_id', $company_id);
+                });
+            })->when(!$company_id, function ($query) use ($companyArray){
+                $query->whereHas('deviceAssignment.company', function ($q) use ($companyArray){
+                    $q->whereIn('id', $companyArray);
+                });
+            })->when($company_name, function ($query) use ($company_name, $companyArray){
+                $query->whereHas('deviceAssignment.company', function ($q) use ($company_name, $companyArray){
+                    $q->where('name', $company_name)->whereIn('id', $companyArray);
+                });
+            })->when($mount_no, function ($query) use ($mount_no){
+                $query->whereHas('deviceAssignment', function ($q) use ($mount_no){
+                    $q->where('mount_no', $mount_no);
+                });
+            })->when($device_model, function ($query) use ($device_model){
+                $query->whereHas('deviceAssignment.device.deviceType', function ($q) use ($device_model){
+                    $q->where('type', $device_model);
+                });
+            })->when($sb_billing_number, function ($query) use ($sb_billing_number){
+                $query->whereHas('deviceAssignment.company', function ($q) use ($sb_billing_number){
+                    $q->where('sb_payment_no', $sb_billing_number);
+                });
+            })->when($group_name, function ($query) use ($group_name){
+                $query->whereHas('deviceAssignment.deviceGroup', function ($q) use ($group_name){
+                    $q->where('name', $group_name);
+                });
+            })->when($imei_number, function ($query) use ($imei_number){
+                $query->whereHas('deviceAssignment.device', function ($q) use ($imei_number){
+                    $q->where('imei', $imei_number);
+                });
+            })->when($msn, function ($query) use ($msn){
+                $query->whereHas('deviceAssignment.sim', function ($q) use ($msn){
+                    $q->where('msn', $msn);
+                });                
+            })->when($command_center, function ($query) use ($command_center){
+                $query->whereHas('deviceAssignment.phones', function ($q) use ($command_center){
+                    $q->where(['phone' => $command_center, 'auth_no' => 0]);
+                });
+            })->when($receiver_number, function ($query) use ($receiver_number){
+                $query->whereHas('deviceAssignment.phones', function ($q) use ($receiver_number){
+                    $q->where('phone', $receiver_number);
+                });
+        });
+    });
+        
+
+        // if(Auth::user()->userRole->role == 'user')
+        // {
+        //     $company_id = Auth::user()->company_id;
+        //     $query->doesntHave('deviceSetting')->whereHas('deviceAssignment', function ($q) use ($company_id){
+        //         $q->where('company_id', $company_id);
+        //     })
+        //     ->orWhereHas('deviceSetting', function ($q) use ($company_id) {
+        //         $q->where('company_id', $company_id);
+        //     });
+        // }
+        
+        //$query_not_null->merge($query_setting_null);
+        session(['company_device_history_history' =>
+            [
+                'date' => $date,
+                'rtc_time' => $rtc_time,
+                'emergency_buzzer' => $emergency_buzzer,
+                'emergency_call' => $emergency_call,
+                'call_received' => $call_received,
+                'power_off' => $power_off,
+                'power_on' => $power_on,
+                'battery_low' => $battery_low,
+                'location_inquiry' => $location_inquiry,
+                'connection_error' => $connection_error,
+                'connection_restore' => $connection_restore,
+                'device_model' => $device_model,
+                'sb_billing_number' => $sb_billing_number,
+                'group_name' => $group_name,
+                'imei_number' => $imei_number,
+                'command_center' => $command_center,
+                'msn' => $msn,
+                'receiver_number' => $receiver_number,
+                'positioning_with_at_true' => $positioning_with_at_true,
+                'positioning_with_at_false' => $positioning_with_at_false,
+                'mount_no'  => $mount_no,
+                'company_name' => $company_name
+            ]
+        ]);
+        session(['company_device_history_history_page' => $request->get('page')]);
+        return $query;
+    }
+
+    public function linkedReportsDealt(DeviceReport $device_report, $data){
+        $device_sim_id = $device_report->deviceAssignment->sim->id;
+        
+        DeviceReport::whereHas('deviceAssignment', function($q) use( $device_sim_id ) {
+            $q->where('sim_id', $device_sim_id);
+        })
+        // ->where('positioning', '>=', 1)
+        // ->get();
+        ->update( $data );
+        
+    }
+
+}

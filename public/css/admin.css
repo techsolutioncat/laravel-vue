@@ -1,0 +1,109 @@
+/* Admin Page Style */
+
+.tabs {
+    width: 100%;
+  }
+  
+  [role="tablist"] {
+    margin: 0 0 -0.1em;
+    overflow: visible;
+  }
+  
+  [role="tab"] {
+    position: relative;
+    margin: 0;
+    padding: 0.25em 0.5em;
+    border: 2px solid hsl(216deg 47% 58%);
+    border-bottom: none;
+    border-radius: 100px;
+    overflow: visible;
+    font-family: inherit;
+    font-size: inherit;
+    background: #fff
+  }
+  
+  [role="tab"][aria-selected="true"] {
+    border-radius: 0;
+    background: #fff;
+    outline: 0;
+    border-top-left-radius: 0.8em;
+    border-top-right-radius: 0.8em;
+    padding: 13px;
+  }
+  
+  [role="tab"][aria-selected="true"]::after {
+    position: absolute;
+    z-index: 3;
+    bottom: -1px;
+    right: 0;
+    left: 0;
+    height: 0.3em;
+    background: #fff;
+    box-shadow: none;
+    content: '';
+  }
+  
+  [role="tabpanel"] {
+    position: relative;
+    z-index: 2;
+    padding: 0.5em 0.5em 0.7em;
+    border: 2px solid hsl(216deg 47% 58%);
+    border-radius: 0 0.8em 0.8em 0.8em;
+    background: #fff;
+  }
+
+  [role="tabpanel"]:focus::after {
+    position: absolute;
+    bottom: 0;
+    right: -1px;
+    left: -1px;
+    border-radius: 0 0 0.2em 0.2em;
+    content: '';
+  }
+  #add_new_user {
+    float: right;
+    margin-bottom: 10px;
+  }
+  .action-group a.space_normal{
+    margin-right: 5px;
+  }
+  .action-group a.btn-back{
+      margin-left: 0px;
+  }
+  .has-error{
+    border: solid 1px #ff0000;
+    color: #ff0000;
+  }
+
+  .pagination {    
+    position: relative;
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .pagination li {
+    margin-right: 4px;
+    display: inline-block;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    width: 30px;
+    text-align: center;
+  }
+  
+  .pagination li a {
+    display: inline-block;
+    /*padding: 3px 8px 2px;*/
+  }
+  
+  .pagination li a:hover {
+    opacity: 1;
+  }
+
+  .pagination li .active {
+    background: #4c95c1;
+    border: 1px solid #4c95c1;
+  }
+  
+  
+  

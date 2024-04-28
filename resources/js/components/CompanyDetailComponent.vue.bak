@@ -1,0 +1,272 @@
+<template v-slot:default>
+    <div>
+        <Loading v-show="loading"></Loading>
+        <form :action="action" method="post" autocomplete="chrome-off">
+            <csrf/>
+            <input type="hidden" name="id" :value="company.id">
+            <div class="inner">
+                <section class="top_20 bottom_20">
+                    <h2 class="font_25 text_c">{{company.name}}</h2>
+                </section>
+
+                <company-header :company_id="company.id" path="2"></company-header>
+
+                <section class="top_20 bottom_20">
+                    <h3 class="font_18 border_title p_left10 l_height18">会社詳細</h3>
+                </section>
+
+                <section class="top_10">
+                    <table>
+                        <tr class="h_39">
+                            <th class="w_200 text_l p_left6">登録日</th>
+                            <td class="text_l">
+                                <div class="p_left6">
+                                    <span id="date" type="text" class="w_100 right_20">{{company.created_at_date}}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="h_39">
+                            <th class="w_200 text_l p_left6">SB請求先番号</th>
+                            <td class="text_l">
+                                <div class="p_left6">
+                                    <error_display :message="validationErrors['sb_payment_no']">
+                                        <input id="sb_payment_no" name="sb_payment_no" type="text" class="w_110" v-model="company.sb_payment_no" :disabled="!isAdmin">
+                                    </error_display>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="h_39">
+                            <th class="w_200 text_l p_left6">会社名</th>
+                            <td class="text_l">
+                                <div class="p_left6">
+                                    <error_display :message="validationErrors['name']">
+                                        <input id="company_name" name="name" type="text" class="w_350" v-model="company.name">
+                                    </error_display>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="h_39">
+                            <th class="w_200 text_l p_left6">住所</th>
+                            <td class="text_l">
+                                <div class="p_left6">
+                                    <error_display :message="validationErrors['address']">
+                                        <input id="address" type="text" name="address" class="w_350" v-model="company.address">
+                                    </error_display>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="h_39">
+                            <th class="w_200 text_l p_left6">電話番号</th>
+                            <td class="text_l">
+                                <div class="p_left6">
+                                    <error_display :message="validationErrors['phone']">
+                                        <input id="phone" name="phone" type="text" class="w_110" v-model="company.phone">
+                                    </error_display>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="h_39">
+                            <th class="w_200 text_l p_left6">郵便番号</th>
+                            <td class="text_l">
+                                <div class="p_left6">
+                                    <error_display :message="validationErrors['postcode']">
+                                    <input id="postcode" name="postcode" type="text" class="w_110" v-model="company.postcode">
+                                    </error_display>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="h_39">
+                            <th class="w_200 text_l p_left6">総責任者名</th>
+                            <td class="text_l">
+                                <div class="p_left6">
+                                    <error_display :message="validationErrors['owner_name']">
+                                    <input id="owner_name" name="owner_name" type="text" class="w_550" v-model="company.owner_name">
+                                    </error_display>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="h_39">
+                            <th class="w_200 text_l p_left6">総責任者メールアドレス</th>
+                            <td class="text_l">
+                                <div class="p_left6">
+                                    <error_display :message="validationErrors['owner_mail']">
+                                    <input id="owner_mail" name="owner_mail" type="email" class="w_350" v-model="company.owner_mail">
+                                    </error_display>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="h_39">
+                            <th class="w_180 text_l p_left6">ログインID</th>
+                            <td class="text_l">
+                                <div class="p_left6">
+                                    <error_display :message="validationErrors['login_id']">
+                                        <input id="loginid" name="loginid" type="text" class="w_110" v-model="login_id" autocomplete="chrome-off">
+                                    </error_display>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="h_39">
+                            <th class="w_180 text_l p_left6">パスワード</th>
+                                <td class="text_l">
+                                    <div class="p_left6">
+                                        <error_display :message="validationErrors['password']">
+                                            <input id="password" v-model="company.password"
+                                                    name="password"
+                                                type="password"
+                                                class="w_110"
+                                                autocomplete="new-password">
+                                        </error_display>
+                                    </div>
+<!--                                    <span class="p_left10">-->
+<!--                                        <input name="password_changed" type="checkbox" class="w_20" v-model="password_changed">-->
+<!--                                        <span class="">変更する</span>-->
+<!--                                    </span>-->
+                                </td>
+                        </tr>
+
+                        <tr class="h_39" v-if="isAdmin">
+                            <th class="w_200 text_1 p_left6"><div class="ds_flex">支社ID</div></th>
+                            <td class="text_1">
+                                <div class="p_left6">
+                                    <div class="ds_flex">
+                                        <!--<select v-model="company.user_id" class="w_110">
+                                            <option v-for="(branch, index) in branches" v-bind:value="branch['id']" :selected="company.user_id == branch.id">{{ branch['login_id'] }}</option>
+                                        </select>-->
+                                        <!--"new_branches[company.user_id]['login_id']" v-on:input="sourceChanged" -->
+                                        <input id="user_id" name="user_id" type="text" v-model="new_branches[company.user_id]['login_id']" list="company_users">                                        
+                                        <datalist id="company_users">
+                                            <option v-for="(branch, index) in branches">{{ branch['login_id'] }}</option>
+                                        </datalist>
+                                    </div>
+                                </div>
+                            </td>     
+                        </tr>           
+
+                        <tr class="h_39">
+                            <th class="w_180 text_l p_left6">メッセージ機能</th>
+                            <td class="text_l p_left6">
+                                <div class="radio p_left6">
+                                    <input name="message_enabled" type="radio" class="radio-input" id="enable" value="1" v-model="company.message_enabled">
+                                    <label for="enable">
+                                        <span class="p_left10">使用する</span>
+                                    </label>
+                                    <input name="message_enabled" type="radio" class="radio-input" id="disable" value="0" v-model="company.message_enabled">
+                                    <label for="disable">
+                                        <span class="p_left10">使用しない</span>
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                </section>
+
+                <section class="top_20 bottom_20">
+                    <div class="text_c space">
+                        <a href="/company" class="delete_btn l_btn space_normal right_10">一覧に戻る</a>
+                        <a v-on:click="update" class="details_btn l_btn space_normal">保存</a>
+                    </div>
+                </section>
+
+            </div>
+        </form>
+
+    </div>
+</template>
+
+<script>
+    import axios from 'axios';
+    import Loading from './Loading';
+    import CompanyHeader from "./CompanyHeader";
+    import Csrf from "./Csrf";
+    import validation_error_display from './validation_error_display';
+    
+    export default {
+        name: 'CompanyDetailComponent',
+        components: {
+            'error_display': validation_error_display,
+            CompanyHeader,
+            Loading,
+            Csrf,
+        },
+        data() {
+            return {
+                modal_type: 'update',
+                password_changed: false,
+                password: '',
+                company: typeof company === 'undefined' ? null : company,
+                login_id: typeof company === 'undefined' ? null : company.user ? company.user.login_id : "",
+                isAdmin: typeof isAdmin === 'undefined' ? false : isAdmin,
+                loading: false,
+                action: '',
+                validationErrors: {},
+                branches: branches.length == 0? [] : branches,
+                new_branches: new_branches.length == 0? [] : new_branches,
+            }
+        },
+        methods: {
+            // 更新
+            update: function () {        
+                //if(this.login_id == undefined) this.login_id = 0;
+                this.company.login_id = this.login_id;
+                this.company.action = 'update';
+                this.company.user_id = document.getElementById("user_id");
+                axios.post('/company/update', this.company)
+                    .then(res => {
+                        //window.alert("保存しました。");
+                        //window.location.href = '/company'
+                    })
+                    .catch(e => {
+                        console.log("company.update.error", e.response.data.errors);
+                        this.assignValidationErrors(e.response.data.errors);
+                    })
+            },
+            // 削除
+            destroy: function () {
+                this.action = '/company/delete';
+            },
+            assignValidationErrors: function (responseErrorData) {
+                this.validationErrors = {};
+
+                for (let key in responseErrorData) {
+                    if (responseErrorData.hasOwnProperty(key)) {
+                        this.$set(this.validationErrors, key, _.head(responseErrorData[key]));
+                    }
+                }
+            },
+            init: function () {
+                console.log("company.detail", this.company, this.login_id);
+                if (this.company.user_id == null) {
+                    this.company.user_id = -1;
+                }
+            },
+            sourceChanged: function(e) {                          
+                //console.log("source = "+this.source+" new value = "+e.target.value);
+                //var newSource = e.target.value;
+                console.log("this.company");
+                this.company.login_id = this.login_id;
+                this.company.action = 'update';
+                this.company.user_id = e.target.value;
+                //only action if value is different from current deepSource 
+                // if (newSource!= this.deepSource.name) { 
+                //     for (var i=0; i<this.sources.length; i++) {
+                //         if (this.sources[i].name == newSource) {
+                //         this.deepSource = this.sources[i];
+                //         this.source = this.deepSource.name;                    
+                //         }
+                //     }
+                // this.$emit('sourceChanged', this.deepSource.id);
+                //}
+            }
+        },
+        mounted() {
+            this.init();
+        }
+    }
+</script>
+
+<style scoped>
+    .ds_flex {
+        display: flex;
+    }
+</style>

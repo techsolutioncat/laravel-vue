@@ -1,0 +1,256 @@
+// modal = モーダルのID
+function show_modal(modal = '#modal') {
+	// オーバーレイ用の要素を追加
+	$('body').append('<div class="modal-overlay"></div>');
+	// オーバーレイをフェードイン
+	$('.modal-overlay').fadeIn();
+
+	// モーダルコンテンツの表示位置を設定
+	modalResize();
+
+	// モーダルコンテンツフェードイン
+	$(modal).fadeIn();
+
+	// 「.modal-overlay」あるいは「.modal-close」をクリック
+	$('.modal-overlay, .modal-close').off().click(function () {
+		// モーダルコンテンツとオーバーレイをフェードアウト
+		console.log("click.modal.out");
+		$(modal).fadeOut('slow');
+		$('.modal-overlay').fadeOut(function () {
+			// オーバーレイを削除
+			$('.modal-overlay').remove();
+		});
+	});
+
+	// リサイズしたら表示位置を再取得
+	$(window).on('resize', function () {
+		modalResize();
+	});
+
+	// モーダルコンテンツの表示位置を設定する関数
+	function modalResize() {
+		// ウィンドウの横幅、高さを取得
+		// var w = $(window.top).width();
+		// var h = $(window.top).height();
+		var w = window.innerWidth;
+		var h = window.innerHeight;
+
+		// モーダルコンテンツの表示位置を取得
+		var x = (w - $(modal).outerWidth(true)) / 2;
+		var y = (h - $(modal).outerHeight(true)) / 2;
+
+		// モーダルコンテンツの表示位置を設定
+		$(modal).css({ 'left': x + 'px', 'top': y + 'px' });
+	}
+}
+
+function hide_modal(modal = '#modal') {
+	$(modal).fadeOut('slow');
+	$('.modal-overlay').fadeOut(function () {
+		// オーバーレイを削除
+		$('.modal-overlay').remove();
+	});
+}
+//*------　ポップアップ　-------*//
+$(function () {
+	// 「.modal-open」をクリック
+	$('.modal-open').click(function () {
+		// オーバーレイ用の要素を追加
+
+		$('body').append('<div class="modal-overlay"></div>');
+
+		// オーバーレイをフェードイン
+		$('.modal-overlay').fadeIn();
+
+		// モーダルコンテンツのIDを取得
+		var modal = '#' + $(this).attr('data-target');
+
+		// モーダルコンテンツの表示位置を設定
+		modalResize();
+		// モーダルコンテンツフェードイン
+		$(modal).fadeIn();
+
+		// 「.modal-overlay」あるいは「.modal-close」をクリック
+		$('.modal-overlay, .modal-close').off().click(function () {
+			// モーダルコンテンツとオーバーレイをフェードアウト
+			$(modal).fadeOut('slow');
+
+			$('.modal-overlay').fadeOut(function () {
+				// オーバーレイを削除
+				$('.modal-overlay').remove();
+			});
+		});
+
+		// リサイズしたら表示位置を再取得
+		$(window).on('resize', function () {
+			modalResize();
+		});
+
+		// モーダルコンテンツの表示位置を設定する関数
+		function modalResize() {
+			// ウィンドウの横幅、高さを取得
+			// var w = $(window.top).width();
+			// var h = $(window.top).height();
+			var w = window.innerWidth;
+			var h = window.innerHeight;
+
+			// モーダルコンテンツの表示位置を取得
+			var x = (w - $(modal).outerWidth(true)) / 2;
+			var y = (h - $(modal).outerHeight(true)) / 2;
+
+			// モーダルコンテンツの表示位置を設定
+			$(modal).css({ 'left': x + 'px', 'top': y + 'px' });
+		}
+	});
+});
+
+
+function save() {
+	window.alert('保存しました');
+}
+
+//*------　 テキストエリアの改行　-------*//
+$(function () {
+	$('textarea.auto-resize')
+		.on('change keyup keydown paste cut', function () {
+			if ($(this).outerHeight() > this.scrollHeight) {
+				$(this).height(1)
+			}
+			while ($(this).outerHeight() < this.scrollHeight) {
+				$(this).height($(this).height() + 1)
+			}
+		});
+});
+
+//*------　インポート　-------*//
+$(document).on('click', '#import_file_button', function () {
+	$("#import_file").click();
+})
+$(document).on('change', '#import_file', function () {
+	$('#import_filename').val($(this).val().replace(/^.*\\/, ""));
+})
+
+function modal_resize() {
+	let modal = $('.modal-content');
+	let w = $(window).outerWidth(true);
+	let h = $(window).outerHeight(true);
+	let x = (w - modal.outerWidth(true)) / 2;
+	let y = (h - modal.outerHeight(true)) / 2;
+	modal.css({ 'left': x + 'px', 'top': y + 'px' });
+}
+
+$(window).on('resize', function () {
+	modal_resize();
+});
+
+function modal_fade_out() {
+	// モーダルコンテンツとオーバーレイをフェードアウト
+	$('.modal-content').fadeOut('slow');
+	$('.modal-overlay').fadeOut(function () {
+		// オーバーレイを削除
+		$('.modal-overlay').remove();
+	});
+}
+
+function modal_fade_in(modal_id) {
+	$('body').append('<div class="modal-overlay modal-close"></div>');
+	$('.modal-overlay').fadeIn();
+	let modal = $('#' + modal_id);
+	modal_resize(modal_id);
+	modal.fadeIn();
+
+	$('.modal-overlay, .modal-close').off().click(function () {
+		modal_fade_out();
+	});
+}
+
+
+/* 堀追記 */
+$(function () {
+	add_scrollbar();
+});
+
+// テーブル上部にスクロールバーを追加する関数
+function add_scrollbar() {
+	const scrollTable = $('.table_left_scroll');
+	const tableWidth = scrollTable.innerWidth();　// スクロールテーブルのwidthを取得（overflow含まない）
+	const scrollBar = '<div class="scrollbar-wrap"><div class="scrollbar w_' + tableWidth + '" id="js-scrollbar"><div class= "scrollbar__inner"></div></div></div>';　// 追加するスクロールバーのHTML要素
+
+	// テーブルの前にスクロールバーを追加
+	$(scrollBar).insertBefore('.table_left_scroll');
+
+	const scrollWidth = scrollTable.children('table').innerWidth();　// スクロールテーブルのwidthを取得（overflow含んだ値）
+	$('.scrollbar__inner').css('width', scrollWidth); // .scrollbar__innerのwidthを指定
+	$('.table_left_scroll').attr('id', 'js-scrollTable'); // テーブルにid名 js-scrollTable を追加
+	// スクロールバー連動させる関数を実行
+	scroll_interlocking();
+}
+
+// 追加したスクロールバーを連動させる関数
+function scroll_interlocking() {
+	$("#js-scrollbar, #js-scrollTable").on('scroll', function () {
+		if ($(this).attr('id') === 'js-scrollbar') {
+			$('#js-scrollTable').scrollLeft($(this).scrollLeft());
+		} else {
+			$("#js-scrollbar").scrollLeft($(this).scrollLeft());
+		}
+	});
+}
+
+/*============= 堀追記。後で削除 =============*/
+$(function () {
+	// ログアウト確認処理
+	$('#logout_btn').on('click', function () {
+		// if (!confirm('ログアウトしますか？')) {
+		// 	/* キャンセルの時の処理 */
+		// 	return false;
+		// } else {
+		// 	/* OKの時の処理 */
+		// 	//location.href = 'login.html';
+		// 	document.getElementById('logout-form').submit();
+		// }
+		show_modal('#logout-modal');
+	});
+
+	// 位置問い合わせボタン動作確認用
+	$('#positional_btn').on('click', function () {
+		$('#positional_btn').addClass('-disabled');
+		$('#positional_btn').next('.load-container').css('display', 'inline-block');
+		setTimeout(function () {
+			window.location.href = './divice_history_details-emergency-5.html';
+		}, 100);
+	});
+});
+
+window.onload = function() {
+	const spinner = document.getElementById('loading');
+	if (spinner) {
+		spinner.classList.add('loaded');
+		let close = ()=>{
+			spinner.style.display = "none";
+		}
+		setTimeout(close, 1000);
+	}
+}
+
+$(function() {
+    // 1. 「全選択」する
+    $('#all').on('click', function() {
+      $("input[name='chk[]']").prop('checked', this.checked);
+	  // trigger event so that vue's model can be updated.
+	  $("input[name='chk[]']").each(function() {
+		  this.dispatchEvent(new Event('change'));
+	  })
+    });
+    // 2. 「全選択」以外のチェックボックスがクリックされたら、
+    $("input[name='chk[]']").on('click', function() {
+      if ($('#boxes :checked').length == $('#boxes :input').length) {
+        // 全てのチェックボックスにチェックが入っていたら、「全選択」 = checked
+        $('#all').prop('checked', true);
+      } else {
+        // 1つでもチェックが入っていたら、「全選択」 = checked
+        $('#all').prop('checked', false);
+      }
+    });
+  });
+

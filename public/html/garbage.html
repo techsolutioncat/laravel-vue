@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>端末管理(ゴミ箱)</title>
+	<link href="../css/style.css" rel="stylesheet" type="text/css">
+	<script src="../js/jquery-3.1.1.min.js"></script>
+	<script src="../js/script.js"></script>
+</head>
+
+<body>
+	<header>
+		<!-- ローディング画面 -->
+		<div id="loading">
+			<div class="half-circle-spinner">
+				<div class="circle circle-1"></div>
+				<div class="circle circle-2"></div>
+			  </div>
+		</div>
+		<div class="w_100p h_70 p_fixed main_color z_99">
+			<div class=" inner clearfix h_70">
+				<div class="float_l left_10">
+					<a href="notice.html">
+						<h1 class="font_white font_25 h_70 l_height70 font_normal">エマージェ端末管理</h1>
+					</a>
+				</div>
+				<div class="float_r">
+					<ul class="text_c d_flex">
+						<li class="w_120 block border_l">
+							<a class="font_white font_14 block l_height70 textnone" href="history.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/history.png">
+								</span>
+								<span class="font_white">
+									履歴管理
+								</span>
+							</a>
+						</li>
+						<li class="w_120 block border_l active">
+							<a class="font_white font_14 block l_height70 textnone" href="terminal_management.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/terminal.png">
+								</span>
+								<span class="font_white">
+									端末管理
+								</span>
+							</a>
+						</li>
+						<li class="w_120 block border_l">
+							<a class="font_white font_14 block l_height70 textnone" href="admin.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/admin.png">
+								</span>
+								<span class="font_white">
+									管理者管理
+								</span>
+							</a>
+						</li>
+						<li class="w_120 block border_l">
+							<a class="font_14 block l_height70 textnone" href="company_info.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/company_info.png">
+								</span>
+								<span class="font_white">
+									契約先情報
+								</span>
+							</a>
+						</li>
+						<li class="w_120 block border_l base_color">
+							<!--<a href="login.html" class="font_main font_14 l_height70 textnone">ログアウト</a>-->
+							<a href="login.html" class="font_main font_14 l_height70 textnone" id="logout_btn">ログアウト</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="h_70"></div>
+	</header>
+	<main>
+		<div class="inner">
+			<section class="top_20 bottom_20">
+				<h2 class="font_20 border_title p_left10 l_height20">端末管理（ゴミ箱）</h2>
+			</section>
+			<!-- search -->
+			<section class="search_color p1020">
+				<div class="check_box_wrap bottom_10">
+					<span class="right_10">利用開始日</span>
+					<input type="text" placeholder="2019/02/02" class="w_100 right_20" kl_vkbd_parsed="true">
+					<span class="right_10">機種</span>
+					<select class="w_110">
+						<option value=""></option>
+						<option value="JPTL-401">JPTL-401
+						</option>
+						<option value="JPTL-400">JPTL-400
+						</option>
+						<option value="JPTL-4011111111">JPTL-4011111111
+						</option>
+						<option value="JPTL-402">JPTL-402
+						</option>
+					</select>
+					<span class="left_20 right_10">IMEI番号</span>
+					<input type="text" class="w_140" kl_vkbd_parsed="true">
+					<span class="left_20 right_10">会社名</span>
+					<input type="text" class="w_320 right_20" kl_vkbd_parsed="true">
+				</div>
+				<div class="bottom_10">
+					<span class="right_10">グループ名</span>
+					<input type="text" class="w_350 right_20" kl_vkbd_parsed="true">
+					<span class="right_10">SB請求先番号</span>
+					<input type="text" class="w_100 right_20" kl_vkbd_parsed="true">
+					<span class="right_10">架.No</span>
+					<input type="text" class="w_140 right_20" kl_vkbd_parsed="true">
+				</div>
+				<div>
+					<span class="right_10">端末名称</span>
+					<input type="text" class="w_140 right_20" kl_vkbd_parsed="true">
+					<span class="right_10">端末電話番号</span>
+					<input type="text" placeholder="ハイフンなし" class="w_140 right_20" kl_vkbd_parsed="true">
+					<span class="right_10">端末発信設定</span>
+					<input type="text" placeholder="ハイフンなし" class="w_120 right_20" kl_vkbd_parsed="true">
+					<span class="right_10">着信可能設定</span>
+					<input type="text" placeholder="ハイフンなし" class="w_120 right_20" kl_vkbd_parsed="true">
+				</div>
+				<div class="text_c">
+					<button class="create_btn sm_btn top_20">
+						<div class="d_flex d_flex-center flex-center">
+							<figure class="search_img">
+								<img src="../img/kensaku.svg" alt="">
+							</figure>
+							<span class="search_txt">検索</span>
+						</div>
+						
+					</button>
+				</div>
+			</section>
+			<!-- pager -->
+			<div class="pager bottom_10 top_20 position_r">
+				<ul class="pagination">
+					<li class="disabled"><a tabindex="-1">＜</a></li>
+					<li class="page-item active"><a tabindex="0">1</a></li>
+					<li class="page-item"><a tabindex="0">2</a></li>
+					<li class="page-item"><a tabindex="0">3</a></li>
+					<li class="page-item"><a tabindex="0">4</a></li>
+					<li class=""><a tabindex="0">＞</a></li>
+				</ul>
+				<div class="position_a t0r0">
+					<button data-target="modal" class="create_btn m_btn modal-open right_5"
+						style="display: none;">Excelインポート</button>
+					<button class="create_btn m_btn right_5" style="display: none;">Excelエクスポート</button>
+					<button class="s_btn create_btn right_5" style="display: none;">新規作成</button>
+					<a class="create_btn sm_btn" style="display: none;">
+						<div class="d_flex_center">
+							<div class="w_13 l_height28"><img src="/img/garbage.png"></div>
+							<div class="l_height28"><span class="font_white">ゴミ箱</span></div>
+						</div>
+					</a>
+				</div>
+				<div class="position_a t0l0">
+					<a href="terminal_management.html" class="return_btn sm_btn">
+						<div class="d_flex_center">
+							<div class="w_13 l_height28 right_5"><img src="../img/uturn.png">
+							</div>
+							<div class="l_height28"><span class="font_white">戻る</span></div>
+						</div>
+					</a>
+				</div>
+			</div>
+			<!-- table -->
+			<section class="top_10 clearfix">
+				<div class="table_left_scroll float_l w_1050">
+					<table>
+						<tr class="h_32">
+							<th class="w_60">休止</th>
+							<th class="w_60">未更新</th>
+							<th class="w_90">利用開始日</th>
+							<th class="w_90">利用終了日</th>
+							<th class="w_90">読込日</th>
+							<th class="w_70">電源状態</th>
+							<th class="w_70">BAT残量</th>
+							<th class="w_110">架.No</th>
+							<th class="w_110">端末電話番号</th>
+							<th class="w_160">IMEI番号</th>
+							<th class="w_160">端末名称</th>
+							<th class="w_250">グループ名</th>
+							<th class="w_120">SB請求先番号</th>
+							<th class="w_110">端末発信設定</th>
+							<th class="w_110">着信可能設定01</th>
+							<th class="w_110">着信可能設定02</th>
+							<th class="w_110">着信可能設定03</th>
+							<th class="w_90">更新日</th>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+						<tr class="h_39">
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/pause.png">
+								</div>
+							</td>
+							<td>
+								<div class="w_20 text_c auto">
+									<img src="../img/note.png">
+								</div>
+							</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>2019/01/01</td>
+							<td>OFF</td>
+							<td>50%</td>
+							<td>99999999</td>
+							<td>08091784196</td>
+							<td>863949040226791</td>
+							<td class="text_cut">C端末</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>0000000011</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+							<td>2019/01/01</td>
+						</tr>
+					</table>
+				</div>
+				<div class="w_150 float_r">
+					<table>
+						<tr class="h_32">
+							<th class="w_150"></th>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<a href="garbage_details.html" class="ss_btn details_btn right_5">詳細</a>
+								<a href="#" class="ss_btn create_btn left_5">復元</a>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</section>
+			<!-- pager -->
+			<div class="pager bottom_10 top_20 position_r">
+				<ul class="pagination">
+					<li class="disabled"><a tabindex="-1">＜</a></li>
+					<li class="page-item active"><a tabindex="0">1</a></li>
+					<li class="page-item"><a tabindex="0">2</a></li>
+					<li class="page-item"><a tabindex="0">3</a></li>
+					<li class="page-item"><a tabindex="0">4</a></li>
+					<li class=""><a tabindex="0">＞</a></li>
+				</ul>
+			</div>
+		</div>
+	</main>
+	<section class="pop modal-content" id="load">
+		<div class="pop-box top_20 position_auto auto terminal_table">
+			<table>
+				<tr class="h_39">
+					<th class="w_200 text_l p_left6">ファイル名</th>
+					<td class="text_l">
+						<form action="#" method="#">
+							<input id="download_filename" readonly type="text" value="" class="w_200">
+							<button type="button" id="download_file_button" class="ss_btn create_btn">選択</button>
+							<input id="download_file" type="file" />
+						</form>
+					</td>
+				</tr>
+			</table>
+			<p class="top_10 bottom_20">指定されたファイルをダウンロードします。よろしいですか？</p>
+			<div class="top_20">
+				<div class="text_c space">
+					<a href="#" class="details_btn l_btn space_normal right_5 modal-close">はい</a>
+					<a href="#" class="return_btn l_btn space_normal left_5 modal-close">いいえ</a>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section class="pop modal-content" id="port">
+		<div class="pop-box top_20 position_auto auto terminal_table">
+			<table>
+				<tr class="h_39">
+					<th class="w_200 text_l p_left6">ファイル名</th>
+					<td class="text_l">
+						<form action="#" method="#">
+							<input id="import_filename" readonly type="text" value="" class="w_200">
+							<button type="button" id="import_file_button" class="ss_btn create_btn">選択</button>
+							<input id="import_file" type="file" />
+						</form>
+					</td>
+				</tr>
+			</table>
+			<p class="top_10 bottom_20">指定されたファイルをインポートします。よろしいですか？</p>
+			<div class="top_20">
+				<div class="text_c space">
+					<a href="#" class="details_btn l_btn space_normal right_5 modal-close">はい</a>
+					<a href="#" class="return_btn l_btn space_normal left_5 modal-close">いいえ</a>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section class="pop modal-content" id="message">
+		<div class="pop-box top_20 position_auto auto terminal_table">
+			<table>
+				<tr class="h_39">
+					<th class="w_160 text_l p_left6">非常通報</th>
+					<td class="text_l p_left6">
+						<input type="text" class="w_300">
+					</td>
+					</td>
+				</tr>
+				<tr class="h_39">
+					<th class="w_160 text_l p_left6">防犯ブザー</th>
+					<td class="text_l p_left6">
+						<input type="text" class="w_300">
+					</td>
+					</td>
+				</tr>
+				<tr class="h_39">
+					<th class="w_160 text_l p_left6">電源残量</th>
+					<td class="text_l p_left6">
+						<input type="text" class="w_300">
+					</td>
+					</td>
+				</tr>
+				<tr class="h_39">
+					<th class="w_160 text_l p_left6">電源断</th>
+					<td class="text_l p_left6">
+						<input type="text" class="w_300">
+					</td>
+					</td>
+				</tr>
+			</table>
+			<div class="top_20">
+				<div class="text_c space">
+					<a href="#" class="details_btn l_btn space_normal right_5 modal-close" onclick="save()">保存</a>
+					<a href="#" class="return_btn l_btn space_normal left_5 modal-close">キャンセル</a>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+
+</html>

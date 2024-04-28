@@ -1,0 +1,398 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\CompanyRequest;
+use App\User;
+use Composer\Util\AuthHelper;
+use Dotenv\Exception\ValidationException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Veridator;
+use App\Company;
+use JavaScript;
+use Session;
+use Emerge;
+use mysql_xdevapi\Exception;
+use Illuminate\Support\Facades\DB;
+
+class CompanyController extends Controller
+{
+    protected $deviceController;
+    protected $historyController;
+
+    public function __construct(DeviceController $deviceController, HistoryController $historyController)
+    {
+        $this->deviceController = $deviceController;
+        $this->historyController = $historyController;
+    }
+
+    public function index()
+    {
+        $isAdmin = Auth::user()->isAdmin();
+        $data = $this->get_data_for_table();
+  
+        $companyArray = Company::getCompanyList();
+
+        
+        // $this->authorize('viewAny', Company::class);
+
+        JavaScript::put([
+            'companies' => $data['company_pagination'],
+            'filter' => $data['filter'],
+            'branches' => $data['branches'],
+            'isAdmin' => $isAdmin,
+            'auth' => Session::get('role')
+        ]);
+        
+        ///delete other page's session for search;
+        if (session('company_device_history_history')) {
+            session(['company_device_history_history' =>
+                [
+                    'date' => '',
+                    'rtc_time' => '',
+                    'emergency_buzzer' => true,
+                    'emergency_call' => true,
+                    'call_received' => true,
+                    'power_off' => true,
+                    'power_on' => true,
+                    'battery_low' => true,
+                    'location_inquiry' => true,
+                    'connection_error' => true,
+                    'connection_restore' => true,
+                    'device_model' => '',
+                    'sb_billing_number' => '',
+                    'group_name' => '',
+                    'imei_number' => '',
+                    'command_center' => '',
+                    'msn' => '',
+                    'receiver_number' => '',
+                    'positioning_with_at_true' => true,
+                    'positioning_with_at_false' => true,
+                ]
+            ]);
+        }
+
+        if (session("company_device_history_history_page")){
+            session(['company_device_history_history_page' => 1]);
+        }
+
+        if (session('company_device_assignment_history')) {
+            session(['company_device_assignment_history' => [
+                'started_at' => null,
+                'mount_no' => null,
+                'device_model' => null,
+                'sb_billing_number' => null,
+                'group_name' => null,
+                'imei_number' => null,
+                'command_center' => null,
+                'msn' => null,
+                'receiver_number' => null,
+                'name' => null,
+                'company_name' => null,
+                'version' => null
+            ]]);
+        }
+
+        if(session('notice_history')){
+            session(['notice_history' => [
+                'emergency_buzzer' => true,
+                'emergency_call' => true,
+                'battery_low' => true,
+                'power_off' => true
+            ]]);
+        }
+
+        if(session('history_setting_history')){
+            session(['history_setting_history' => [
+            'report_date_start' => null,
+            'report_date_end' => null,
+            'mount_no' => null,
+            'imei' => null,
+            'msn' => null
+            ]]);
+        }
+        return view('company.index');
+    }
+
+    public function detail($id)
+    {
+        $company = Company::query()->where('id', $id)->with('user')->first();
+        $isAdmin = Auth::user()->isAdmin();
+        
+        // Authorization check
+        $this->authorize('view', $company);        
+
+        if ($company == null) {
+            return redirect('/company');
+        }
+
+        $new_branch_array = array();
+        $branch_array = User::getBranchList()->toArray();
+        
+        $new_branch_array_info = DB::table('users')             
+                            ->join('user_roles','users.user_role_id','=','user_roles.id')               
+                            ->select('*','login_id as lid')     
+                            ->where('users.id', '=', $company['user_id'])
+                            //->where('user_roles.auth', '=', 3)                                                                                                   
+                            ->get()
+                            ->toArray();
+        //var_dump($branch_array);exit;
+        $new_branch_array = (array) ($new_branch_array_info[0]);
+        // foreach($new_branch_array_info as $branch){            
+        //     $new_branch_array[$branch->id] = (array) $branch;
+        // }
+        //var_dump($new_branch_array[36]['lid']);exit;
+        $branch_admin = array('id'=>-1, 'login_id'=>"admin");
+        //array_unshift($branch_array, $branch_admin);
+
+        //var_dump($branch_array);exit(0);
+        $branch_array_auth_branch = array();
+        foreach($branch_array as $branch_array_info){
+            if($branch_array_info['user_role_id'] == 4)
+                $branch_array_auth_branch[] = $branch_array_info;
+        }
+
+        JavaScript::put([
+            'company' => $company,
+            'isAdmin' => $isAdmin,
+            'branches' => $branch_array_auth_branch,
+            'new_branches' => $new_branch_array,
+            'user_role' => Session::get('role'),
+        ]);
+        return view('company.detail');
+    }
+
+    public function searchCompany(Request $request){
+        // Authorization for this function is controlled at web.php route controll
+
+        $user_id = null;
+        if (!Auth::user()->isAdmin()) {
+            $user_id = Auth::user()->id;
+        }
+
+        $registered_at = $request->get('registered_at');
+        $sb_billing_number = $request->get('sb_payment_no');
+        $company_name = $request->get('company_name');
+        $company_phone = $request->get('phone_number');
+
+        $data = $this->search($registered_at, $sb_billing_number, $company_name, $company_phone, $user_id);
+
+        $data = Emerge::customPaginate($data, 20);
+
+        session(['company_history' => [
+            'registered_at' => $registered_at,
+            'sb_payment_no' => $sb_billing_number,
+            'company_name' => $company_name,
+            'phone_number' => $company_phone
+        ]]);
+        return [
+            'success' => true,
+            'data' => $data,
+        ];
+    }
+
+    private function get_data_for_table(){
+        $user_id = null;
+        if (!Auth::user()->isAdmin()) {
+            $user_id = Auth::user()->id;
+        }
+
+        $registered_at = $sb_billing_number = $company_name = $phone_number = null;
+
+        if(session('company_history')){
+            $registered_at = session('company_history')['registered_at'];
+            $sb_billing_number = session('company_history')['sb_payment_no'];
+            $company_name = session('company_history')['company_name'];
+            $phone_number = session('company_history')['phone_number'];
+        }
+        $companies = $this->search($registered_at, $sb_billing_number, $company_name, $phone_number, $user_id);
+
+        $companies_pagination = Emerge::customPaginate($companies, 20);
+        
+        $branch_array = User::getBranchList()->toArray();
+        $branch_admin = array('id'=>-1, 'login_id'=>"admin");
+        array_unshift($branch_array, $branch_admin);
+        
+        return [
+            'company_pagination' => $companies_pagination,
+            'filter' => [
+                'registered_at' => $registered_at,
+                'sb_payment_no' => $sb_billing_number,
+                'company_name' => $company_name,
+                'phone_number' => $phone_number,
+                'user_id' => $user_id,
+            ],
+            'branches' => $branch_array,
+        ];
+    }
+
+    public function search($registered_at, $sb_billing_number, $company_name, $phone_number, $user_id){
+
+        $query = Company::query();
+
+        if ($registered_at)
+            $query->whereDate('created_at', $registered_at);
+
+        if ($sb_billing_number)
+            $query->where('sb_payment_no', $sb_billing_number);
+
+        if ($company_name)
+            $query->where('name', 'like', '%' . $company_name . '%');
+
+        if ($phone_number)
+            $query->where('phone', $phone_number);
+
+        if ($user_id)
+            if (Auth::user()->isBranchAdmin()) {
+
+                if (Auth::user()->company_id) {
+                    $query->where(function($q) use ($user_id){
+                        $q->where('user_id', $user_id);
+                        $q->orWhere('id', Auth::user()->company_id);
+                    });
+                } else {
+                    $query->where('user_id', $user_id);
+                }
+            } else {
+                $query->where('id', Auth::user()->company_id);
+            }
+        
+        session(['company_history' => [
+            'registered_at' => $registered_at,
+            'sb_payment_no' => $sb_billing_number,
+            'company_name' => $company_name,
+            'phone_number' => $phone_number
+        ]]);
+
+        return $query->orderBy('created_at', 'desc')->get();
+    }
+
+    public function register(CompanyRequest $request)
+    {
+
+        // Authorization check
+        $this->authorize('create', Company::class);   
+    
+        $data['name'] = $request->post('name', null);
+        $data['sb_payment_no'] = $request->post('sb_payment_no', null);
+        $data['address'] = $request->post('address', null);
+        $data['phone'] = $request->post('phone', null);
+        $data['postcode'] = $request->post('postcode', null);
+        $data['owner_name'] = $request->post('owner_name', null);
+        $data['owner_mail'] = $request->post('owner_mail', null);
+        $data['login_id'] = $request->post('login_id', null);
+        $data['password'] = $request->post('password', null);
+        $user_id = $request->post('user_id', null);
+        if ($user_id == -1) {
+            $user_id = null;
+        }
+
+        $data['user_id'] = $user_id;
+
+        if (!Auth::user()->isAdmin()) {
+            $data['user_id'] = Auth::user()->id;
+        }        
+
+        try{
+            $company = Company::register($data);
+            // User::query()->create([
+            //     'login_id' => $data['login_id'],
+            //     'name' => $data['owner_name'],
+            //     'password' => Hash::make($data['password']),
+            //     'user_role_id' => 3,
+            //     'enabled' => 1,
+            //     'company_id' => $company->id,
+            // ]);
+            return [
+                'success' => true,
+            ];
+        }catch (\Exception $e){
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function update(CompanyRequest $request)
+    {   
+        $data['id'] = $request->post('id', null);
+        $data['name'] = $request->post('name', null);
+        $data['sb_payment_no'] = $request->post('sb_payment_no', null);
+        $data['address'] = $request->post('address', null);
+        $data['phone'] = $request->post('phone', null);
+        $data['postcode'] = $request->post('postcode', null);
+        $data['owner_name'] = $request->post('owner_name', null);
+        $data['owner_mail'] = $request->post('owner_mail', null);
+        $data['login_id'] = $request->post('login_id', '');
+        $data['password'] = $request->post('password', null);
+        $data['message_enabled'] = $request->post('message_enabled', false);
+        $password_changed = $data['password'] != null;
+        //$user_id = $request->post('user_id', null);
+        $user_name = $request->post('user_id', null);
+        
+        if ($user_name == "") {
+            $user_id = null;
+        }
+        $user_detail = DB::table('users')        
+        ->select('*')
+        ->where('login_id', $user_name)        
+        ->get();        
+        // var_dump($user_name);exit;
+        $data['user_id'] = $user_detail[0]->id;                
+
+        // if ($user_id == -1) {
+        //     $user_id = null;
+        // }
+        //$data['user_id'] = $user_id;                
+
+        if (!Auth::user()->isAdmin()) {
+            $data['user_id'] = Auth::user()->id;
+        }        
+
+        $company_id = $data['id'];
+        
+        $json = Company::updateWithUser($data, $password_changed);
+        return back()->with('success', '会社情報を更新しました');
+    }
+
+    public function delete(Request $request)
+    {
+        $id = $request->post('id', null);
+        $company = Company::find($id);
+
+        // Authorization check
+        $this->authorize('delete', $company);   
+
+        $user = $company->user();
+
+        $user->delete();
+        $company->delete();
+
+        return back()->with('success', '会社情報を削除しました');
+    }
+
+    protected function validator(array $data)
+    {
+        try {
+            return Validator::make($data, [
+                'name' => ['required', 'string'],
+                'phone' => ['required', 'numeric'],
+                'postcode' => ['required', 'numeric'],
+                'address' => ['required', 'string'],
+                'owner_name' => ['required', 'string'],
+                'owner_mail' => ['required', 'email'],
+                'sb_payment_no' => ['required', 'digits:10'],
+                'login_id' => ['required', 'string|min:4|max:18'],
+                'password' => ['min:4|max:18'],
+            ]);
+        }
+        catch( \InvalidArgumentException|ValidationException $e)
+        {
+            throw $e;
+        }
+    }
+}

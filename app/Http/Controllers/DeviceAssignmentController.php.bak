@@ -1,0 +1,288 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Console\Commands\SendCommand;
+use App\device_assignment;
+use App\DeviceAssignment;
+use App\DeviceSetting;
+use App\DeviceSettingPhone;
+use App\Message;
+use App\Phone;
+use App\Company;
+use Carbon\Carbon;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Auth;
+
+class DeviceAssignmentController extends Controller
+{
+    protected $sendCommand;
+
+    public function DeviceAssignmentController(SendCommand $sendCommand)
+    {
+        $this->sendCommand = $sendCommand;
+//        dd($this->sendCommand);
+    }
+
+    public function create($data)
+    {
+        $device_assignment = DeviceAssignment::query()->whereHas('device', function ($q) use ($data) {
+            $q->where('imei', $data['imei']);
+        })->first();
+        if ($device_assignment === null) {
+            if ($data['state'] === '利用中') {
+                $data['started_at'] = Carbon::now()->toDate();
+                $data['ended_at'] = null;
+            } else if ($data['state'] === '利用中止' || $data['state'] === '利用停止') {
+                $data['started_at'] = null;
+                $data['ended_at'] = Carbon::now()->toDate();
+            }
+        } else {
+            if ($data['state'] === '利用中') {
+                $data['started_at'] = $device_assignment->started_at;
+                $data['ended_at'] = null;
+            } else if ($data['state'] === '利用中止' || $data['state'] === '利用停止') {
+                $data['started_at'] = $device_assignment->started_at;
+                $data['ended_at'] = Carbon::now()->toDate();
+            }
+        }
+
+        if (isset($data['mount_no']) && $data['mount_no'] == '') $data['mount_no'] = null;
+        $device_assignment = DeviceAssignment::query()->create($data);
+
+//        if($device_assignment = DeviceAssignment::query()->whereHas('deviceSim', function ($q)use($data){$q->where('device_imei', $data['imei']);})->first()){
+//            $device_assignment->fill($data)->save();
+//        } else {
+//            $device_assignment = DeviceAssignment::query()->create($data);
+//        }
+
+        foreach ($data['phones'] as $phone) {
+            // todo +0101010110 00000000 has passed only (+number or number)
+//            if (!is_numeric($phone['phone']))
+//                throw new \Exception('phone is not numeric value');
+            $phone['device_assignment_id'] = $device_assignment->id;
+            Phone::query()->firstOrCreate([
+                'auth_no' => $phone['auth_no'],
+                'device_assignment_id' => $phone['device_assignment_id']
+            ], $phone);
+        }
+
+//        dd($device_assignment);
+
+        $this->update($device_assignment->id, $data);
+    }
+
+    public function update($id, $data)
+    {
+        try {
+            //dd($data);
+            $d = null;
+            if ($id == null) {
+                $d = DeviceAssignment::query()->whereHas('device', function ($q) use ($data) {
+                    $q->where('imei', $data['imei']);
+                })->first();;
+            } else {
+                $d = DeviceAssignment::query()->find($id);
+            }
+            $data['applied_at'] = null;
+
+            if (isset($data['active'])) {
+                $d->fill(['active' => $data['active']])->save();
+            }
+
+            if (isset($data['state'])) {
+                if ($data['state'] == '利用中') {
+                    $data['ended_at'] = null;
+                } else if ($data['state'] == '利用中止' || $data['state'] === '利用停止') {
+                    $data['ended_at'] = Carbon::now()->toDate();
+                }
+            }
+
+            if (isset($data['mount_no']) && $data['mount_no'] == '') $data['mount_no'] = null;
+
+            $deleted_at = $d->deleted_at;
+            $d->fill($data)->save();
+
+            $data['id'] = null;
+            $data['device_assignment_id'] = $d->id;
+            $data['user_id'] = Auth::user()->id;
+
+            if (isset($data['msn']) && $data['msn'] != "") {
+                $data['sim_id'] = $d->Sim->id;
+            } else {
+                $data['sim_id'] = null;
+            }
+
+            $data['device_id'] = $d->device->id;
+            $new_company_id = Company::where('name', $data['company_name'])->first()->id;
+            //$data['company_id'] = $d->company->id;
+            DeviceAssignment::query()->where('id', $data['device_assignment_id'])->update(['sim_id' => $data['sim_id']]);
+            DeviceAssignment::query()->where('id', $data['device_assignment_id'])->update(['company_id' => $new_company_id]);
+
+            $data['company_id'] = $new_company_id;
+            $data['mount_no'] = $d->mount_no;
+            $data['name'] = $d->name;
+            $data['started_at'] = $d->started_at;
+            $data['ended_at'] = $d->ended_at;
+            $data['restored_at'] = $d->restored_at;
+            $data['deleted_at'] = $deleted_at;
+
+            $ds = DeviceSetting::query()->create($data);
+
+            DeviceAssignment::query()->where('id', $data['device_assignment_id'])->update(['device_setting_id' => $ds->id]);
+
+            foreach ($data['phones'] as $phone) {
+                // todo +0101010110 00000000 has passed only (+number or number)
+
+                // if($phone['phone'] || $phone['name']){
+                Phone::query()->updateOrCreate(
+                    [
+                        'device_assignment_id' => $d->id,
+                        'auth_no' => $phone['auth_no']],
+                    [
+                        'phone' => $phone['phone'],
+                        'name' => $phone['name'],
+                    ]);
+                // }
+
+                $phone['device_setting_id'] = $ds->id;
+                DeviceSettingPhone::query()->firstOrCreate($phone, $phone);
+            }
+
+//            foreach ($d->phones as $id => $phone) {
+//                if ($data['phones']) {
+//                    $no = $phone->auth_no;
+//                    $phone_data = $data['phones'][$no];
+//
+//                    if (!is_numeric($phone_data['phone']))
+//                        throw new \Exception('phone is not numeric value');
+//
+//                    $phone->fill($phone_data)->save();
+//
+//                    $phone['device_setting_id'] = $ds->id;
+//                    DeviceSettingPhone::query()->firstOrCreate($phone, $phone);
+//                }
+//            }
+
+            if (isset($data['emergency_call'])) {
+                Message::query()->updateOrCreate([
+                    'device_assignment_id' => $d->id,
+                    'device_signal_id' => 2 // call = 1
+                ], ['message' => $data['emergency_call']]);
+            } else {
+                Message::query()->updateOrCreate([
+                    'device_assignment_id' => $d->id,
+                    'device_signal_id' => 2 // call = 1
+                ], ['message' => '']);
+            }
+
+            if (isset($data['emergency_buzzer'])) {
+                Message::query()->updateOrCreate([
+                    'device_assignment_id' => $d->id,
+                    'device_signal_id' => 1 // buzzer = 2
+                ], ['message' => $data['emergency_buzzer']]);
+            } else {
+                Message::query()->updateOrCreate([
+                    'device_assignment_id' => $d->id,
+                    'device_signal_id' => 1 // buzzer = 2
+                ], ['message' => '']);
+            }
+
+            if (isset($data['battery_low'])) {
+                Message::query()->updateOrCreate([
+                    'device_assignment_id' => $d->id,
+                    'device_signal_id' => 3
+                ], ['message' => $data['battery_low']]);
+            } else {
+                Message::query()->updateOrCreate([
+                    'device_assignment_id' => $d->id,
+                    'device_signal_id' => 3
+                ], ['message' => '']);
+            }
+
+            if (isset($data['power_off'])) {
+                Message::query()->updateOrCreate([
+                    'device_assignment_id' => $d->id,
+                    'device_signal_id' => 4
+                ], ['message' => $data['power_off']]);
+            } else {
+                Message::query()->updateOrCreate([
+                    'device_assignment_id' => $d->id,
+                    'device_signal_id' => 4
+                ], ['message' => '']);
+            }
+            // if (isset($data['msn'])) {
+            //     $updateCell = Sim::where('id', $d->Sim->id)->update(['msn' => $data['msn']]);
+            // } else {
+            //     $updateCell = Sim::where('id', $d->Sim->id)->update(['msn' => '']);
+            // }
+
+            // 端末の更新
+            if (config('services.setting.enabled')) {
+                if ($d->device->deviceType->type == 'S10')
+                    $this->callSettingApi($d);
+//                ProccessSettingApi::dispatch($d->id);
+            }
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    private function callSettingApi($deviceAssignment)
+    {
+//        $url = config('services.setting.url');
+//        $port = config('services.setting.port');
+        $verify = config('app.env') != 'local';
+        $access_token = 'AAAAYAxYMAs:APA91bE1kz03Xtoyr7J2KuoRVN1c_z2XmjqigavjRrS1qM9zwbcTlhxpsWplnEo_uDNgINKnYXqXxm_uzh2OJyX_iLgU8gzYxafhoIRxcmcL7TEvjfX5dxkLe35XE6SifgHZyXiO0PVK';
+
+        $url = "https://fcm.googleapis.com/fcm/send";
+
+
+        $fcmToken = $deviceAssignment->device->fcmToken;
+        if ($fcmToken == null) return;
+        $token = $fcmToken->token;
+
+        $phones = json_decode($deviceAssignment->phones);
+        $buzzer = $deviceAssignment->emergencyBuzzer->message;
+        $call = $deviceAssignment->emergencyCall->message;
+        $batteryLow = $deviceAssignment->batteryLow->message;
+        $powerOff = $deviceAssignment->powerOff->message;
+//        $call = json_decode($deviceAssignment->phones->first());
+
+        $message = [
+            'data' => [
+                'operation' => 'SETTING',
+                'status' => 'OK',
+                'message' => '',
+                'data' => [
+                    'phones' => $phones,
+                    'buzzer_message' => $buzzer,
+                    'call_message' => $call,
+                    'battery_low_message' => $batteryLow,
+                    'power_off_message' => $powerOff,
+                ]
+            ],
+            'to' => $token,
+        ];
+
+        $client = new Client([
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' => 'key=' . $access_token,
+            ]
+        ]);
+
+        $response = $client->post($url, [
+            'body' => json_encode($message),
+            'verify' => $verify
+        ]);
+//        $response_body = (string)$response->getBody();
+        if ($response->getStatusCode() == 200) {
+            return true;
+        } else {
+            return null;
+        }
+    }
+
+
+}

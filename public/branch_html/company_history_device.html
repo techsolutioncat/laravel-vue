@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>会社情報_端末履歴</title>
+	<link href="../css/style.css" rel="stylesheet" type="text/css">
+	<script src="../js/jquery-3.1.1.min.js"></script>
+	<script src="../js/script.js"></script>
+</head>
+
+<body>
+	<header>
+		<div class="w_100p h_70 p_fixed main_color z_99">
+			<div class=" inner clearfix h_70">
+				<div class="float_l left_10">
+					<a href="notice.html">
+						<h1 class="font_white font_25 h_70 l_height70 font_normal">エマージェ端末管理</h1>
+					</a>
+				</div>
+				<div class="float_r">
+					<ul class="text_c d_flex">
+						<li class="w_120 block border_l">
+							<a class="font_white font_14 block l_height70 textnone" href="notice.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/news.png">
+								</span>
+								<span class="font_white">
+									受信一覧
+								</span>
+							</a>
+						</li>
+						<li class="w_120 block border_l">
+							<a class="font_white font_14 block l_height70 textnone" href="history.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/history.png">
+								</span>
+								<span class="font_white">
+									履歴管理
+								</span>
+							</a>
+						</li>
+						<li class="w_120 block border_l">
+							<a class="font_white font_14 block l_height70 textnone" href="terminal_management.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/terminal.png">
+								</span>
+								<span class="font_white">
+									端末管理
+								</span>
+							</a>
+						</li>
+
+						<li class="w_120 block border_l active">
+							<a class="font_14 block l_height70 textnone" href="company_info.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/company_info.png">
+								</span>
+								<span class="font_white">
+									契約先情報
+								</span>
+							</a>
+						</li>
+						<li class="w_120 block border_l base_color">
+							<!--<a href="login.html" class="font_main font_14 l_height70 textnone">ログアウト</a>-->
+							<a href="login.html" class="font_main font_14 l_height70 textnone" id="logout_btn">ログアウト</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="h_70"></div>
+	</header>
+	<main>
+		<div class="inner">
+			<section class="top_20 bottom_20">
+				<h2 class="font_25 text_c">株式会社テストテスト</h2>
+			</section>
+			<!-- tab -->
+			<div class="border_b">
+				<a href="company_history_device.html" class="inblock tab  tab_active">端末履歴</a>
+				<a href="company_terminal.html" class="inblock tab">端末管理</a>
+				<a href="company_details.html" class="inblock tab ">会社詳細</a>
+			</div>
+			<section class="top_20 bottom_20">
+				<h2 class="font_20 border_title p_left10 l_height20">端末履歴</h2>
+			</section>
+			<!-- search -->
+			<section class="search_color p1020">
+				<div class="check_box_wrap bottom_10">
+					<span class="right_10">日付</span>
+					<input type="text" placeholder="2020/09/09" class="w_100 right_20" kl_vkbd_parsed="true">
+					<div class="check_box_wrap inblock right_20">
+						<label class="checkbox_text">
+							<input type="checkbox" kl_vkbd_parsed="true">緊急通報
+						</label>
+					</div>
+					<div class="check_box_wrap inblock right_20">
+						<label class="checkbox_text">
+							<input type="checkbox" kl_vkbd_parsed="true">電話着信
+						</label>
+					</div>
+					<div class="check_box_wrap inblock right_20">
+						<label class="checkbox_text">
+							<input type="checkbox" kl_vkbd_parsed="true">緊急ブザー
+						</label>
+					</div>
+					<div class="check_box_wrap inblock right_20">
+						<label class="checkbox_text">
+							<input type="checkbox" kl_vkbd_parsed="true">電源OFF
+						</label>
+					</div>
+					<div class="check_box_wrap inblock right_20">
+						<label class="checkbox_text">
+							<input type="checkbox" kl_vkbd_parsed="true">電源ON
+						</label>
+					</div>
+					<div class="check_box_wrap inblock right_20">
+						<label class="checkbox_text">
+							<input type="checkbox" kl_vkbd_parsed="true">位置問い合わせ
+						</label>
+					</div>
+					<div class="check_box_wrap inblock">
+						<label class="checkbox_text">
+							<input type="checkbox" kl_vkbd_parsed="true">バッテリー低下
+						</label>
+					</div>
+				</div>
+				<div class="bottom_10">
+					<span class="right_10">機種</span>
+					<select class="w_110 right_20">
+						<option value=""></option>
+						<option value="JPTL-401">JPTL-401</option>
+						<option value="JPTL-400">JPTL-400</option>
+						<option value="JPTL-4011111111">JPTL-4011111111</option>
+						<option value="JPTL-402">JPTL-402</option>
+					</select>
+					<span class="right_10">IMEI番号</span>
+					<input type="text" class="w_140 right_20" kl_vkbd_parsed="true">
+				</div>
+				<div class="bottom_10">
+					<span class="right_10">グループ名</span>
+					<input type="text" class="w_320" kl_vkbd_parsed="true">
+				</div>
+				<div>
+					<span class="right_10">端末電話番号</span>
+					<input type="text" placeholder="ハイフンなし" class="w_120 right_20" kl_vkbd_parsed="true">
+					<span class="right_10">指令センター</span>
+					<input type="text" placeholder="ハイフンなし" class="w_120" kl_vkbd_parsed="true">
+					<span class="right_10 left_20">受信可能番号</span>
+					<input type="text" placeholder="ハイフンなし" class="w_120" kl_vkbd_parsed="true">
+					<div class="check_box_wrap inblock left_20 right_20">
+						<label class="checkbox_text right_10"><input type="checkbox" kl_vkbd_parsed="true">対応済
+						</label> <label class="checkbox_text"><input type="checkbox" kl_vkbd_parsed="true">未対応
+						</label>
+					</div>
+					<button class="create_btn ss_btn">検索</button>
+				</div>
+			</section>
+			<!-- pager -->
+			<section class="pager bottom_10 top_20 position_r">
+				<ul class="pagination">
+					<li class="disabled"><a tabindex="-1">＜</a></li>
+					<li class="page-item active"><a tabindex="0">1</a></li>
+					<li class="page-item"><a tabindex="0">2</a></li>
+					<li class="page-item"><a tabindex="0">3</a></li>
+					<li class="page-item disabled"><a tabindex="0" class="">…</a>
+					</li>
+					<li class="page-item"><a tabindex="0">100</a></li>
+					<li class=""><a tabindex="0">＞</a></li>
+				</ul>
+			</section>
+			<!-- table -->
+			<section class="top_10 clearfix">
+				<div class="table_left_scroll float_l w_1000" id="js-scrollTable">
+					<table>
+						<tr class="h_32">
+							<th class="w_90">日付</th>
+							<th class="w_70">時刻</th>
+							<th class="w_110"></th>
+							<th class="w_150">IMEI番号</th>
+							<th class="w_150">機種</th>
+							<th class="w_250">グループ名</th>
+							<th class="w_110">端末電話番号</th>
+							<th class="w_110">指令センター</th>
+							<th class="w_110">受信可能番号01</th>
+							<th class="w_110">受信可能番号02</th>
+							<th class="w_110">受信可能番号03</th>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/05</td>
+							<td>01:48:47</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 else_color undefined">電源OFF</div>
+								</div>
+							</td>
+							<td>863949040226791</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>08091784196</td>
+							<td>07021730934</td>
+							<td>22222222222</td>
+							<td>11111111111</td>
+							<td>1111111113</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/03</td>
+							<td>18:08:01</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 else_color undefined">バッテリー低下
+									</div>
+								</div>
+							</td>
+							<td>863949040226791</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>08091784196</td>
+							<td>07021730934</td>
+							<td>22222222222</td>
+							<td>11111111111</td>
+							<td>1111111113</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/02</td>
+							<td>15:02:47</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 else_color undefined">電源OFF</div>
+								</div>
+							</td>
+							<td>863949040225876</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ</td>
+							<td>08091534966</td>
+							<td>08075782706</td>
+							<td>080441877778</td>
+							<td>9999999</td>
+							<td>9999999</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/02</td>
+							<td>15:02:32</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 buzzer_color undefined">緊急ブザー
+									</div>
+								</div>
+							</td>
+							<td>863949040225876</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ</td>
+							<td>08091534966</td>
+							<td>08075782706</td>
+							<td>080441877778</td>
+							<td>9999999</td>
+							<td>9999999</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/02</td>
+							<td>14:17:53</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 else_color undefined">位置問い合わせ
+									</div>
+								</div>
+							</td>
+							<td>863949040225876</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ</td>
+							<td>08091534966</td>
+							<td>08075782706</td>
+							<td>080441877778</td>
+							<td>9999999</td>
+							<td>9999999</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/02</td>
+							<td>14:17:49</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 report_color undefined">緊急通報
+									</div>
+								</div>
+							</td>
+							<td>863949040225876</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ</td>
+							<td>08091534966</td>
+							<td>08075782706</td>
+							<td>080441877778</td>
+							<td>9999999</td>
+							<td>9999999</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/02</td>
+							<td>14:13:21</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 buzzer_color undefined">緊急ブザー
+									</div>
+								</div>
+							</td>
+							<td>863949040225876</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ</td>
+							<td>08091534966</td>
+							<td>08075782706</td>
+							<td>080441877778</td>
+							<td>9999999</td>
+							<td>9999999</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/02</td>
+							<td>14:13:06</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 else_color undefined">電源ON</div>
+								</div>
+							</td>
+							<td>863949040225876</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ</td>
+							<td>08091534966</td>
+							<td>08075782706</td>
+							<td>080441877778</td>
+							<td>9999999</td>
+							<td>9999999</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/01</td>
+							<td>16:20:32</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 else_color undefined">電源OFF</div>
+								</div>
+							</td>
+							<td>863949040225876</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ</td>
+							<td>08091534966</td>
+							<td>08075782706</td>
+							<td>080441877778</td>
+							<td>9999999</td>
+							<td>9999999</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/01</td>
+							<td>16:20:09</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 else_color undefined">位置問い合わせ
+									</div>
+								</div>
+							</td>
+							<td>863949040225876</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ</td>
+							<td>08091534966</td>
+							<td>08075782706</td>
+							<td>080441877778</td>
+							<td>9999999</td>
+							<td>9999999</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/01</td>
+							<td>16:12:49</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 buzzer_color undefined">緊急ブザー
+									</div>
+								</div>
+							</td>
+							<td>863949040225876</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ</td>
+							<td>08091534966</td>
+							<td>08075782706</td>
+							<td>080441877778</td>
+							<td>9999999</td>
+							<td>9999999</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/01</td>
+							<td>10:06:08</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 report_color undefined">緊急通報
+									</div>
+								</div>
+							</td>
+							<td>863949040226775</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>08091701642</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/01</td>
+							<td>10:04:42</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 else_color undefined">電源OFF</div>
+								</div>
+							</td>
+							<td>863949040225876</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ</td>
+							<td>08091534966</td>
+							<td>08075782706</td>
+							<td>080441877778</td>
+							<td>9999999</td>
+							<td>9999999</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/01</td>
+							<td>10:04:17</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 else_color undefined">電源ON</div>
+								</div>
+							</td>
+							<td>863949040225876</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ</td>
+							<td>08091534966</td>
+							<td>08075782706</td>
+							<td>080441877778</td>
+							<td>9999999</td>
+							<td>9999999</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/01</td>
+							<td>09:58:17</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 incoming_color undefined">電話着信
+									</div>
+								</div>
+							</td>
+							<td>863949040226775</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>08091701642</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/01</td>
+							<td>09:57:37</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 incoming_color undefined">電話着信
+									</div>
+								</div>
+							</td>
+							<td>863949040226775</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>08091701642</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/01</td>
+							<td>09:57:00</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 incoming_color undefined">電話着信
+									</div>
+								</div>
+							</td>
+							<td>863949040226775</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>08091701642</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/01</td>
+							<td>09:55:06</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 report_color undefined">緊急通報
+									</div>
+								</div>
+							</td>
+							<td>863949040226775</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>08091701642</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/01</td>
+							<td>09:55:05</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 report_color undefined">緊急通報
+									</div>
+								</div>
+							</td>
+							<td>863949040226775</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>08091701642</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+						</tr>
+						<tr class="h_39">
+							<td>2020/12/01</td>
+							<td>09:53:36</td>
+							<td>
+								<div>
+									<div class="block font-12 p0404 report_color undefined">緊急通報
+									</div>
+								</div>
+							</td>
+							<td>863949040226775</td>
+							<td>JPTL-401</td>
+							<td class="text_cut">テストグループ1</td>
+							<td>08091701642</td>
+							<td>08059082262</td>
+							<td>0</td>
+							<td>45646789089</td>
+							<td>0</td>
+						</tr>
+					</table>
+				</div>
+				<div class="w_200 float_r">
+					<table>
+						<tr class="h_32">
+							<th class="w_60">受信数</th>
+							<th class="w_60">対応済</th>
+							<th class="w_80"></th>
+						</tr>
+						<tr class="receive_color">
+							<td>
+								<a href="company_receive.html">
+									<span class="receive_color">0</span>
+									<span class="receive_color">|</span>
+									<span class="receive_color">0</span>
+								</a>
+							</td>
+							<td>
+								<div class="w_20 text_c auto"><img src="../img/check.png"></div>
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+								<a href="company_receive.html">
+									<span class="receive_color">1</span>
+									<span class="receive_color">|</span>
+									<span class="receive_color">1</span>
+								</a>
+							</td>
+							<td>
+								<!--<div class="w_20 text_c auto"><img src="../img/check.png"></div>-->
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+							</td>
+							<td>
+								<div class="w_20 text_c auto"><img src="../img/check.png"></div>
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+								<a href="company_receive.html">
+									<span class="receive_color">0</span>
+									<span class="receive_color">|</span>
+									<span class="receive_color">0</span>
+								</a>
+							</td>
+							<td>
+								<!--<div class="w_20 text_c auto"><img src="../img/check.png"></div>-->
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+								<a href="company_receive.html">
+									<span class="receive_color">1</span>
+									<span class="receive_color">|</span>
+									<span class="receive_color">1</span>
+								</a>
+							</td>
+							<td>
+								<div class="w_20 text_c auto"><img src="../img/check.png"></div>
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+							</td>
+							<td>
+								<!--<div class="w_20 text_c auto"><img src="../img/check.png"></div>-->
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+								<a href="company_receive.html">
+									<span class="receive_color">0</span>
+									<span class="receive_color">|</span>
+									<span class="receive_color">0</span>
+								</a>
+							</td>
+							<td>
+								<div class="w_20 text_c auto"><img src="../img/check.png"></div>
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+								<a href="company_receive.html">
+									<span class="receive_color">1</span>
+									<span class="receive_color">|</span>
+									<span class="receive_color">1</span>
+								</a>
+							</td>
+							<td>
+								<!--<div class="w_20 text_c auto"><img src="../img/check.png"></div>-->
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+							</td>
+							<td>
+								<div class="w_20 text_c auto"><img src="../img/check.png"></div>
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+							</td>
+							<td>
+								<!--<div class="w_20 text_c auto"><img src="../img/check.png"></div>-->
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+								<a href="company_receive.html">
+									<span class="receive_color">0</span>
+									<span class="receive_color">|</span>
+									<span class="receive_color">0</span>
+								</a>
+							</td>
+							<td>
+								<div class="w_20 text_c auto"><img src="../img/check.png"></div>
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+								<a href="company_receive.html">
+									<span class="receive_color">1</span>
+									<span class="receive_color">|</span>
+									<span class="receive_color">1</span>
+								</a>
+							</td>
+							<td>
+								<!--<div class="w_20 text_c auto"><img src="../img/check.png"></div>-->
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+							</td>
+							<td>
+								<div class="w_20 text_c auto"><img src="../img/check.png"></div>
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+								<a href="company_receive.html">
+									<span class="receive_color">0</span>
+									<span class="receive_color">|</span>
+									<span class="receive_color">0</span>
+								</a>
+							</td>
+							<td>
+								<!--<div class="w_20 text_c auto"><img src="../img/check.png"></div>-->
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+								<a href="company_receive.html">
+									<span class="receive_color">1</span>
+									<span class="receive_color">|</span>
+									<span class="receive_color">1</span>
+								</a>
+							</td>
+							<td>
+								<div class="w_20 text_c auto"><img src="../img/check.png"></div>
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+							</td>
+							<td>
+								<!--<div class="w_20 text_c auto"><img src="../img/check.png"></div>-->
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+								<a href="company_receive.html">
+									<span class="receive_color">0</span>
+									<span class="receive_color">|</span>
+									<span class="receive_color">0</span>
+								</a>
+							</td>
+							<td>
+								<div class="w_20 text_c auto"><img src="../img/check.png"></div>
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+								<a href="company_receive.html">
+									<span class="receive_color">1</span>
+									<span class="receive_color">|</span>
+									<span class="receive_color">1</span>
+								</a>
+							</td>
+							<td>
+								<!--<div class="w_20 text_c auto"><img src="../img/check.png"></div>-->
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+							</td>
+							<td>
+								<div class="w_20 text_c auto"><img src="../img/check.png"></div>
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+						<tr class="receive_color">
+							<td>
+							</td>
+							<td>
+								<!--<div class="w_20 text_c auto"><img src="../img/check.png"></div>-->
+							</td>
+							<td>
+								<a href="company_history_divice_details.html" class="ss_btn details_btn">詳細</a>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</section>
+			<!-- pager -->
+			<section class="pager bottom_10 top_20 position_r">
+				<ul class="pagination">
+					<li class="disabled"><a tabindex="-1">＜</a></li>
+					<li class="page-item active"><a tabindex="0">1</a></li>
+					<li class="page-item"><a tabindex="0">2</a></li>
+					<li class="page-item"><a tabindex="0">3</a></li>
+					<li class="page-item disabled"><a tabindex="0" class="">…</a>
+					</li>
+					<li class="page-item"><a tabindex="0">100</a></li>
+					<li class=""><a tabindex="0">＞</a></li>
+				</ul>
+			</section>
+		</div>
+	</main>
+</body>
+
+</html>

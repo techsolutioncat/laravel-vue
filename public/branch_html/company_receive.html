@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>受信詳細</title>
+	<link href="../css/style.css" rel="stylesheet" type="text/css">
+	<script src="../js/jquery-3.1.1.min.js"></script>
+	<script src="../js/script.js"></script>
+</head>
+
+<body>
+	<header>
+		<div class="w_100p h_70 p_fixed main_color z_99">
+			<div class=" inner clearfix h_70">
+				<div class="float_l left_10">
+					<a href="notice.html">
+						<h1 class="font_white font_25 h_70 l_height70 font_normal">エマージェ端末管理</h1>
+					</a>
+				</div>
+				<div class="float_r">
+					<ul class="text_c d_flex">
+						<li class="w_120 block border_l">
+							<a class="font_white font_14 block l_height70 textnone" href="notice.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/news.png">
+								</span>
+								<span class="font_white">
+									受信一覧
+								</span>
+							</a>
+						</li>
+						<li class="w_120 block border_l">
+							<a class="font_white font_14 block l_height70 textnone" href="history.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/history.png">
+								</span>
+								<span class="font_white">
+									履歴管理
+								</span>
+							</a>
+						</li>
+						<li class="w_120 block border_l">
+							<a class="font_white font_14 block l_height70 textnone" href="terminal_management.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/terminal.png">
+								</span>
+								<span class="font_white">
+									端末管理
+								</span>
+							</a>
+						</li>
+
+						<li class="w_120 block border_l active">
+							<a class="font_14 block l_height70 textnone" href="company_info.html">
+								<span class="inblock w_14">
+									<img class="w_100p" src="../img/company_info.png">
+								</span>
+								<span class="font_white">
+									契約先情報
+								</span>
+							</a>
+						</li>
+						<li class="w_120 block border_l base_color">
+							<!--<a href="login.html" class="font_main font_14 l_height70 textnone">ログアウト</a>-->
+							<a href="login.html" class="font_main font_14 l_height70 textnone" id="logout_btn">ログアウト</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="h_70"></div>
+	</header>
+	<main>
+		<div class="inner">
+			<section class="top_20 bottom_20">
+				<h2 class="font_20 border_title p_left10 l_height20">受信詳細</h2>
+			</section>
+			<section class="search_color p1020">
+				<div>
+					<div class="check_box_wrap inblock right_20">
+						<label class="checkbox_text">
+							<input type="checkbox">未受信
+						</label>
+					</div>
+					<div class="check_box_wrap inblock right_20">
+						<label class="checkbox_text">
+							<input type="checkbox">受信済
+						</label>
+					</div>
+					<a href="#" class="create_btn ss_btn">検索</a>
+				</div>
+			</section>
+			<section class="top_20 clearfix">
+				<div>
+					<table>
+						<tr class="h_32">
+							<th class="w_100">受信状況</th>
+							<th class="w_110"></th>
+							<th class="w_110">架.No</th>
+							<th class="w_160">IMEI番号</th>
+							<th class="w_110">端末電話番号</th>
+							<th>グループ名</th>
+						</tr>
+						<tr>
+							<td>
+								<span class="not_received_color">未受信</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>受信済</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>受信済</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span class="not_received_color">未受信</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span class="not_received_color">未受信</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span class="not_received_color">未受信</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span class="not_received_color">未受信</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span class="not_received_color">未受信</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span class="not_received_color">未受信</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span class="not_received_color">未受信</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>受信済</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>受信済</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>受信済</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>受信済</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>受信済</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>受信済</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>受信済</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>受信済</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>受信済</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>受信済</span>
+							</td>
+							<td>
+								<div class="inblock h_icon report_color">緊急通報
+								</div>
+							</td>
+							<td>
+								<span>090229984</span>
+							</td>
+							<td>
+								<span>863949040086260</span>
+							</td>
+							<td>
+								<span>090-2299-8478</span>
+							</td>
+							<td>
+								<span>テストグループ</span>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</section>
+			<div class="text_c top_20 bottom_20">
+				<a href="company_history_device.html" class="return_btn l_btn space_normal left_5 modal-close">戻る</a>
+			</div>
+		</div>
+	</main>
+	<section class="pop modal-content" id="load">
+		<div class="pop-box top_20 position_auto auto terminal_table">
+			<table>
+				<tr class="h_39">
+					<th class="w_200 text_l p_left6">ファイル名</th>
+					<td class="text_l">
+						<form action="#" method="#">
+							<input id="download_filename" readonly type="text" value="" class="w_200">
+							<button type="button" id="download_file_button" class="ss_btn create_btn">選択</button>
+							<input id="download_file" type="file" />
+						</form>
+					</td>
+				</tr>
+			</table>
+			<p class="top_10 bottom_20">指定されたファイルをダウンロードします。よろしいですか？</p>
+			<div class="top_20">
+				<div class="text_c space">
+					<a href="#" class="details_btn l_btn space_normal right_5 modal-close">はい</a>
+					<a href="#" class="return_btn l_btn space_normal left_5 modal-close">いいえ</a>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section class="pop modal-content" id="port">
+		<div class="pop-box top_20 position_auto auto terminal_table">
+			<table>
+				<tr class="h_39">
+					<th class="w_200 text_l p_left6">ファイル名</th>
+					<td class="text_l">
+						<form action="#" method="#">
+							<input id="import_filename" readonly type="text" value="" class="w_200">
+							<button type="button" id="import_file_button" class="ss_btn create_btn">選択</button>
+							<input id="import_file" type="file" />
+						</form>
+					</td>
+				</tr>
+			</table>
+			<p class="top_10 bottom_20">指定されたファイルをインポートします。よろしいですか？</p>
+			<div class="top_20">
+				<div class="text_c space">
+					<a href="#" class="details_btn l_btn space_normal right_5 modal-close">はい</a>
+					<a href="#" class="return_btn l_btn space_normal left_5 modal-close">いいえ</a>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section class="pop modal-content" id="message">
+		<div class="pop-box top_20 position_auto auto terminal_table">
+			<table>
+				<tr class="h_39">
+					<th class="w_160 text_l p_left6">非常通報</th>
+					<td class="text_l p_left6">
+						<input type="text" class="w_300">
+					</td>
+					</td>
+				</tr>
+				<tr class="h_39">
+					<th class="w_160 text_l p_left6">防犯ブザー</th>
+					<td class="text_l p_left6">
+						<input type="text" class="w_300">
+					</td>
+					</td>
+				</tr>
+				<tr class="h_39">
+					<th class="w_160 text_l p_left6">電源残量</th>
+					<td class="text_l p_left6">
+						<input type="text" class="w_300">
+					</td>
+					</td>
+				</tr>
+				<tr class="h_39">
+					<th class="w_160 text_l p_left6">電源断</th>
+					<td class="text_l p_left6">
+						<input type="text" class="w_300">
+					</td>
+					</td>
+				</tr>
+			</table>
+			<div class="top_20">
+				<div class="text_c space">
+					<a href="#" class="details_btn l_btn space_normal right_5 modal-close">保存</a>
+					<a href="#" class="return_btn l_btn space_normal left_5 modal-close">キャンセル</a>
+				</div>
+			</div>
+		</div>
+	</section>
+</body>
+
+</html>

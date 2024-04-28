@@ -1,0 +1,291 @@
+<template>
+    <div>
+        <loading v-show="loading"></loading>
+        <form action="/history/update" method="post">
+            <input type="hidden" name="_token" :value="csrf">
+            <input type="hidden" name="id" :value="history.id">
+            <input v-if="company_id" type="hidden" name="company_id" :value="company_id"/>
+
+            <div class="inner">
+                <section class="top_10 bottom_20">
+                    <div class="bottom_20">
+                        <iframe :src="'https://www.google.com/maps?&output=embed&q=' + history.lat + ',' + history.lng"
+                                width="100%" height="400" frameborder="0" style="border:0;" allowfullscreen="">
+                        </iframe>
+                    </div>
+                    <table class="details">
+                        <tbody>
+                            <tr class="h_39">
+                                <th class="item w_200" style="border-bottom: 0">種類</th>
+                                <td class="item" style="border-bottom: 0">
+                                    <signal-icon v-if="history.device_signal"
+                                                 :signal="history.device_signal.signal_int" custom="w_100 text_c"></signal-icon>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="details">
+                        <tbody>
+                        <tr class="h_39">
+                            <th class="item w_200">受信日時</th>
+                            <td class="item">{{history.created_at}}</td>
+                            <th class="item w_200">着信可能設定01</th>
+                            <td class="item">
+                                <span class="right_5">番号</span>
+                                <span class="right_20">{{getPhoneInfo(0, 'phone')}}</span>
+                                <div class="inblock">
+                                    <span class="right_5">名称</span>
+                                    <span>{{getPhoneInfo(0, 'name')}}</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="h_39">
+                            <th class="item">測位日時</th>
+                            <td class="item">{{history.rtc_time}}</td>
+                            <th class="item">着信可能設定02</th>
+                            <td class="item ">
+                                <span class="right_5">番号</span>
+                                <span class="right_20">{{getPhoneInfo(1, 'phone')}}</span>
+                                <div class="inblock">
+                                    <span class="right_5">名称</span>
+                                    <span>{{getPhoneInfo(1, 'name')}}</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="h_39">
+                            <th class="item">架.No</th>
+                            <td class="item">{{history.device_assignment.mount_no}}</td>
+                            <th class="item">着信可能設定04</th>
+                            <td class="item ">
+                                <span class="right_5">番号</span>
+                                <span class="right_20">{{getPhoneInfo(2, 'phone')}}</span>
+                                <div class="inblock">
+                                    <span class="right_5">名称</span>
+                                    <span>{{getPhoneInfo(2, 'name')}}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="h_39">
+                            <th class="item">IMEI番号</th>
+                            <td class="item">{{history.device_assignment.device.imei}}</td>
+                            <th class="item">着信可能設定05</th>
+                            <td class="item ">
+                                <span class="right_5">番号</span>
+                                <span class="right_20">{{getPhoneInfo(3, 'phone')}}</span>
+                                <div class="inblock">
+                                    <span class="right_5">名称</span>
+                                    <span>{{getPhoneInfo(3, 'name')}}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="h_39">
+                            <th class="item">SB請求先番号</th>
+                            <td class="item">{{history.device_assignment.company.sb_payment_no}}</td>
+                            <th class="item">着信可能設定06</th>
+                            <td class="item ">
+                                <span class="right_5">番号</span>
+                                <span class="right_20">{{getPhoneInfo(4, 'phone')}}</span>
+                                <div class="inblock">
+                                    <span class="right_5">名称</span>
+                                    <span>{{getPhoneInfo(4, 'name')}}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="h_39">
+                            <th class="item">グループ名</th>
+                            <td class="item ">
+                                <span>{{history.device_assignment.device_group.name}}</span>
+                            </td>
+                            <th class="item">着信可能設定07</th>
+                            <td class="item ">
+                                <span class="right_5">番号</span>
+                                <span class="right_20">{{getPhoneInfo(5, 'phone')}}</span>
+                                <div class="inblock">
+                                    <span class="right_5">名称</span>
+                                    <span>{{getPhoneInfo(5, 'name')}}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="h_39">
+                            <th class="item">会社名</th>
+                            <td class="item">{{history.device_assignment.company.name}}</td>
+                            <th class="item">着信可能設定08</th>
+                            <td class="item ">
+                                <span class="right_5">番号</span>
+                                <span class="right_20">{{getPhoneInfo(6, 'phone')}}</span>
+                                <div class="inblock">
+                                    <span class="right_5">名称</span>
+                                    <span>{{getPhoneInfo(6, 'name')}}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="h_39">
+                            <th class="item">端末電話番号</th>
+                            <td class="item ">
+                                <span class="right_5">番号</span>
+                                <span class="right_20">{{history.device_assignment.sim.msn}}</span>
+                                <div class="inblock">
+                                    <span class="right_5">名称</span>
+                                    <span>{{history.device_assignment.name}}</span>
+                                </div>
+                            </td>
+                            <th class="item">着信可能設定09</th>
+                            <td class="item ">
+                                <span class="right_5">番号</span>
+                                <span class="right_20">{{getPhoneInfo(7, 'phone')}}</span>
+                                <div class="inblock">
+                                    <span class="right_5">名称</span>
+                                    <span>{{getPhoneInfo(7, 'name')}}</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="h_39">
+                            <th class="item">端末発信設定</th>
+                            <td class="item ">
+                                <span class="right_5">番号</span>
+                                <span class="right_20">{{getPhoneInfo(8, 'phone')}}</span>
+                                <div class="inblock">
+                                    <span class="right_5">名称</span>
+                                    <span>{{getPhoneInfo(8, 'name')}}</span>
+                                </div>
+                            </td>
+                            <th class="item">着信可能設定09</th>
+                            <td class="item ">
+                                <span class="right_5">番号</span>
+                                <span class="right_20">{{getPhoneInfo(9, 'phone')}}</span>
+                                <div class="inblock">
+                                    <span class="right_5">名称</span>
+                                    <span>{{getPhoneInfo(9, 'name')}}</span>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr class="h_39">
+                            <th class="item">対応済</th>
+                            <td class="item">
+                                <div>
+                                    <!-- <div class="check_onle_wrap">
+                                        <label class="checkbox_box">
+                                            <input name="dealt_with" v-model="history.dealt_with" type="checkbox"
+                                                   :disabled="!isAdmin && parent !== 'notice'">
+                                        </label>
+                                    </div> -->
+                                    <div class="check_onle_wrap">
+                                        <div class="w_20 left_5 auto" 
+                                            v-if="history.dealt_with">       
+                                            <img src="/img/check.png">
+                                        </div>
+                                        <div class="w_20 left_5 auto" 
+                                            v-else>                               
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <th class="item">着信可能設定10</th>
+                            <td class="item ">
+                                <span class="right_5">番号</span>
+                                <span class="right_20">{{getPhoneInfo(10, 'phone')}}</span>
+                                <div class="inblock">
+                                    <span class="right_5">名称</span>
+                                    <span>{{getPhoneInfo(10, 'name')}}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="h_39">
+                            <th class="item">内容</th>
+                            <td class="item">{{history.device_signal ? history.device_signal.description :
+                                null}}がありました。
+                            </td>
+                            <th class="item">補足</th>
+                            <td class="item">
+                                <textarea name="supplement" class="auto-resize textarea resize"
+                                          v-model="history.supplement" :disabled="!isAdmin && parent !== 'notice'"></textarea>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </section>
+                <section class="bottom_20">
+                    <div class="text_c">
+                        <button v-show="isAdmin" class="details_btn l_btn space_normal right_5 modal-close">保存</button>
+                        <a @click="back" class="return_btn l_btn space_normal left_5 modal-close">戻る</a>
+                    </div>
+                </section>
+
+            </div>
+        </form>
+    </div>
+</template>
+
+<script>
+    import axios from 'axios';
+    import Loading from './Loading';
+    import Pager from "./Pager";
+    import SignalIcon from "./SignalIcon";
+
+    export default {
+        name: 'HistoryDetailComponent',
+        components: {
+            Loading,
+            Pager,
+            SignalIcon
+        },
+        data() {
+            return {
+                modal_type: 'update',
+                loading: false,
+                action: '/history/update',
+                csrf: document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                history: typeof history_detail === 'undefined' ? {} : history_detail,
+                isAdmin: typeof isAdmin === 'undefined' ? false : isAdmin,
+            }
+        },
+        load: {
+            key: 'AIzaSyCjO5l2A_gM8cXPD5nWrbKYfo_UlEr4Oyo',
+            libraries: 'places'
+        },
+        props: {
+            'company_id': {
+                type: String,
+                required: false,
+            },
+            parent: {
+                type: String,
+                required: false,
+            }
+        },
+        computed: {},
+        methods: {
+            getPhoneInfo: function (index, field) {
+                return this.history.device_assignment.phones[index] ? this.history.device_assignment.phones[index][field] : null;
+            },
+            back: function () {
+                if (this.company_id) {
+                    window.location.href = '/company/' + this.company_id + '/history';
+                } else if (this.parent === 'notice') {
+                    window.location.href = '/notice';
+                } else {
+                    window.location.href = '/history';
+                }
+
+            },
+            init: function () {
+                console.log("history:detail", this.isAdmin, this.parent);
+            }
+        },
+        mounted() {
+            this.init();
+            // axios.get('https://maps.googleapis.com/maps/api/geocode/json?latlng=40.714224,-73.961452&key=AIzaSyCjO5l2A_gM8cXPD5nWrbKYfo_UlEr4Oyo')
+            //     .then(res => {
+            //         console.log(res)
+            //     })
+        }
+    }
+</script>
+
+<style scoped>
+
+</style>

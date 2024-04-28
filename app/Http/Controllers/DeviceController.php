@@ -1,0 +1,637 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Company;
+use App\Device;
+use App\DeviceAssignment;
+use App\DeviceGroup;
+use App\DeviceSetting;
+use App\DeviceSettingPhone;
+use App\DeviceType;
+use App\Exceptions\ImportException;
+use App\Exports\DeviceExport;
+use App\Imports\DeviceImportController;
+use App\Phone;
+use App\Sim;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use JavaScript;
+use Emerge;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Jobs\CommandApi;
+use Session;
+
+class DeviceController extends Controller
+{
+    protected $deviceAssignmentController, $deviceImportController;
+    protected $perPage = 20;
+
+    public function __construct(
+        DeviceAssignmentController $deviceAssignmentController,
+        DeviceImportController $deviceImportController)
+    {
+        $this->deviceAssignmentController = $deviceAssignmentController;
+        $this->deviceImportController = $deviceImportController;
+    }
+
+    public function index()
+    {
+        $device_types = DeviceType::all()->toArray();
+        #$isAdmin = Auth::user()->userRole->role == 'admin';
+        $isBranchAdmin = Auth::user()->isBranchAdmin();
+
+        // $company_id = Auth::user()->company_id;
+        $companyArray = Company::getCompanyList();
+        //var_dump($companyArray);exit;
+        $data_for_table = $this->get_data_for_table($companyArray, false);
+
+        Javascript::put([
+            'device_assignments' => $data_for_table['company_device_assignment_pagination'],
+            'device_types' => $device_types,
+            'filter' => $data_for_table['filter'],
+        ]);
+
+        return view('device.index', [
+            'isAdmin' => $isBranchAdmin,
+        ]);
+    }
+
+    public function garbage()
+    {
+        $device_types = DeviceType::all()->toArray();
+        // $company_id = Auth::user()->company_id;
+        $companyArray = Company::getCompanyList();
+        $data_for_table = $this->get_data_for_table($companyArray, true);
+
+        Javascript::put([
+            'device_assignments' => $data_for_table['company_device_assignment_pagination'],
+            'device_types' => $device_types,
+            'filter' => $data_for_table['filter'],
+        ]);
+
+        return view('device.garbage');
+    }
+
+    public function listByCompany($company_id)
+    {
+        $device_types = DeviceType::all()->toArray();
+        $company = Company::query()->find($company_id);
+
+        $companyArray = array($company_id);
+        $data_for_table = $this->get_data_for_table($companyArray);
+        #$isAdmin = Auth::user()->userRole->role == 'admin';
+        $isAdmin = Auth::user()->isBranchAdmin();;
+
+        if(!$company){
+            return back();
+        }
+        Javascript::put([
+            'device_assignments' => $data_for_table['company_device_assignment_pagination'],
+            'device_types' => $device_types,
+            'filter' => $data_for_table['filter'],
+            'isAdmin' => $isAdmin
+        ]);
+
+        return view('company.device', [
+            'company_id' => $company_id,
+            'company_name' => $company->name,
+            'role' => Session::get('role'),
+        ]);
+    }
+
+    public function searchDevice(Request $request)
+    {
+        $garbage = $request->get('garbage');
+        $company_id = $request->get('company_id');
+        $company_name = $request->get('company_name');
+        $started_at = $request->get('started_at');
+        $mount_no = $request->get('mount_no');
+        $device_model = $request->get('device_model');
+        $sb_billing_number = $request->get('sb_billing_number');
+        $group_name = $request->get('group_name');
+        $imei_number = $request->get('imei_number');
+        $command_center = $request->get('command_center');
+        $msn = $request->get('msn');
+        $receiver_number = $request->get('receiver_number');
+        $name = $request->get('name');
+
+        if (isset($company_id)) {
+            $company_device_assignments_pagination = $this->search(array($company_id), $started_at, $mount_no, $device_model, $sb_billing_number, $group_name, $company_name, $imei_number,
+            $command_center, $msn, $receiver_number, $name, $garbage);
+        } else {
+            $companyArray = Company::getCompanyList();
+            $company_device_assignments_pagination = $this->search($companyArray, $started_at, $mount_no, $device_model, $sb_billing_number, $group_name, $company_name, $imei_number,
+            $command_center, $msn, $receiver_number, $name, $garbage);
+        }
+
+        // $company_device_assignments_pagination = $this->search(null, $started_at, $mount_no, $device_model, $sb_billing_number, $group_name, $company_name, $imei_number,
+        // $command_center, $msn, $receiver_number, $name, $garbage);
+
+
+        $company_device_assignments = Emerge::customPaginate($company_device_assignments_pagination, 20);
+        return [
+            'success' => true,
+            'data' => $company_device_assignments,
+        ];
+    }
+
+    public function detail($device_id)
+    {
+        $device_assignment = DeviceAssignment::query()->where('id', $device_id)->with([
+            'device',
+            'sim',
+            'device.deviceType',
+            'deviceGroup',
+            'company',
+            'phones',
+        ])->first();
+
+        $companies = Company::getCompanyNames();
+
+        if (Auth::user()->userRole->role == 'user') {
+            if (Auth::user()->company_id != $device_assignment->company_id) {
+                // in this case, back with error
+                return back()->with('error', 'アクセス権がありません');
+                // return redirect('history');
+            }
+        }
+
+        $isAdmin = Auth::user()->isBranchAdmin();
+
+        JavaScript::put([
+            'device_assignment' => $device_assignment,
+            'device_status' => $device_assignment->device->status,
+            'isAdmin' => $isAdmin,
+            'isProduction' => config('app.env') == 'production',
+            'companies' => $companies
+        ]);
+
+        return view('device.detail');
+    }
+
+    public function garbageDetail($device_id)
+    {
+        $device_assignment = DeviceAssignment::onlyTrashed()->where('id', $device_id)->with([
+            'sim',
+            'device.deviceType',
+            'deviceGroup',
+            'company',
+            'phones',
+        ])->first();
+
+        if (!Auth::user()->isAdmin()) {
+            return redirect('device')->with('error', 'このページは表示できません。');
+        }
+
+        $companies = Company::getCompanyNames();
+
+        JavaScript::put([
+            'device_assignment' => $device_assignment,
+            'device_status' => $device_assignment->device->status,
+            'company' => $device_assignment->company,
+            'isProduction' => view()->shared('is_production'),
+            'companies' => $companies
+        ]);
+
+        return view('device.detail', ['company' => null]);
+    }
+
+    public function detailForCompany($company_id, $device_id)
+    {
+        $company = Company::query()->find($company_id);
+        $companies = Company::getCompanyNames();
+        $device_assignment = DeviceAssignment::query()->where('id', $device_id)->with([
+            'sim',
+            'device.deviceType',
+            'deviceGroup',
+            'company',
+            'phones',
+        ])->first();
+
+        JavaScript::put([
+            'company' => $company,
+            'device_assignment' => $device_assignment,
+            'device_status' => $device_assignment->device->status,
+            'isAdmin' => true,#Auth::user()->isAdmin(),
+            'isProduction' => view()->shared('is_production'),
+            'companies' => $companies
+        ]);
+
+        return view('device.detail', [
+            'company' => $company,
+            'company_name' => $company->name,
+            'company_id' => $company_id
+        ]);
+    }
+
+    private function get_data_for_table($companyArray = null, $garbage = null)
+    {
+        $started_at = $mount_no = $device_model = $sb_billing_number = $group_name = $company_name = $imei_number = $command_center = $msn = $receiver_number = $name = null;
+
+        if (session('company_device_assignment_history')) {
+            $started_at = session('company_device_assignment_history')['started_at'];
+            $mount_no = session('company_device_assignment_history')['mount_no'];
+            $device_model = session('company_device_assignment_history')['device_model'];
+            $sb_billing_number = session('company_device_assignment_history')['sb_billing_number'];
+            $group_name = session('company_device_assignment_history')['group_name'];
+            $imei_number = session('company_device_assignment_history')['imei_number'];
+            $command_center = session('company_device_assignment_history')['command_center'];
+            $msn = session('company_device_assignment_history')['msn'];
+            $receiver_number = session('company_device_assignment_history')['receiver_number'];
+            $name = session('company_device_assignment_history')['name'] ?? null;
+            $company_name = session('company_device_assignment_history')['company_name'] ?? null; 
+        }
+        
+        $company_device_assignments = $this->search($companyArray, $started_at, $mount_no, $device_model, $sb_billing_number, $group_name, $company_name, $imei_number,
+            $command_center, $msn, $receiver_number, $name, $garbage);
+        $company_device_assignments = Emerge::customPaginate($company_device_assignments, 20);
+
+        return [
+            'company_device_assignment_pagination' => $company_device_assignments,
+            'filter' => [
+                'started_at' => $started_at,
+                'device_model' => $device_model,
+                'sb_billing_number' => $sb_billing_number,
+                'group_name' => $group_name,
+                'imei_number' => $imei_number,
+                'command_center' => $command_center,
+                'msn' => $msn,
+                'receiver_number' => $receiver_number,
+                'name' => $name
+            ],
+        ];
+    }
+
+    private function search($companyArray, $started_at, $mount_no, $device_model, $sb_billing_number, $group_name, $company_name, $imei_number,
+                            $command_center, $msn, $receiver_number, $name, $garbage = null)
+    {
+
+        if ($garbage) {
+            $query = DeviceAssignment::onlyTrashed();
+        } else {
+            $query = DeviceAssignment::query();
+        }
+
+        if (isset($started_at)) {
+            $query->whereDate('started_at', $started_at);
+        }
+
+        if (isset($mount_no)) {
+            $query->where('mount_no', 'LIKE', $mount_no);
+        }
+
+        if (isset($device_model)) {
+            $query->whereHas('device.deviceType', function ($q) use ($device_model) {
+                $q->where('type', $device_model);
+            });
+        }
+
+        if (isset($sb_billing_number)) {
+            $query->whereHas('company', function ($q) use ($sb_billing_number) {
+                $q->where('sb_payment_no', $sb_billing_number);
+            });
+        }
+
+        if (isset($companyArray))
+            // $query->where('company_id', '=', $company_id);
+            $query->whereIn('company_id', $companyArray);
+
+        if (isset($group_name)) {
+            $query->whereHas('deviceGroup', function ($q) use ($group_name) {
+                $q->where('name', $group_name);
+            });
+        }
+
+        if (isset($company_name)) {
+            $query->whereHas('company', function ($q) use ($company_name) {
+                $q->
+                where('name', $company_name)->orWhere('name', "like", "%" . $company_name . "%");
+            });
+        }
+
+        if (isset($imei_number)) {
+            $query->whereHas('device', function ($q) use ($imei_number) {
+                $q->where('imei', $imei_number);
+            });
+        }
+
+        if (isset($msn)) {
+            $query->whereHas('sim', function ($q) use ($msn) {
+                $q->where('msn', $msn);
+            });
+        }
+
+        if (isset($receiver_number)) {
+            $query->whereHas('phones', function ($q) use ($receiver_number) {
+                $q->where('phone', $receiver_number);
+        });
+        }
+
+        if (isset($command_center)) {
+            $query->whereHas('phones', function ($q) use ($command_center) {
+                $q->where(['phone' => $command_center, 'auth_no' => 0]);
+            });
+        }
+
+        if (isset($name)) {
+            $query->where('name', '=', $name);
+        }
+
+        if(Auth::user()->userRole->role == 'user')
+        {
+            $query->where('company_id', '=', Auth::user()->company_id);
+        }
+
+        session(['company_device_assignment_history' => [
+            'started_at' => $started_at,
+            'mount_no' => $mount_no,
+            'device_model' => $device_model,
+            'sb_billing_number' => $sb_billing_number,
+            'group_name' => $group_name,
+            'imei_number' => $imei_number,
+            'command_center' => $command_center,
+            'msn' => $msn,
+            'receiver_number' => $receiver_number,
+            'name' => $name,
+            'company_name' => $company_name,
+        ]]);
+
+        return $query->with(['sim', 'device.deviceType', 'deviceGroup', 'company', 'phones'])->get();
+    }
+
+    public function delete(Request $request)
+    {
+        $id = $request->post('id', 0);
+        $device_assignment = DeviceAssignment::find($id);
+        $device_assignment->delete();
+        $date = Carbon::now()->toDate();
+
+        $d = DeviceAssignment::onlyTrashed()->find($id);
+        $ds = DeviceSetting::query()->create([
+            'device_assignment_id' => $d->id,
+            'user_id' => Auth::user()->id,
+            'sim_id' => $d->sim->id,
+            'device_id'=> $d->device->id,
+            'company_id' => $d->company->id,
+            'mount_no' => $d->mount_no,
+            'device_group_id' => $d->device_group_id,
+            'name' => $d->name,
+            'started_at' => $d->started_at,
+            'ended_at' => $d->ended_at,
+            'deleted_at' => $date,
+            'restored_at' => null,
+        ]);
+
+
+        $phones = Phone::query()->where('device_assignment_id', $id)->get();
+        foreach ($phones as $phone) {
+            $data = [
+                'name' => $phone->name,
+                'phone' => $phone->phone,
+                'auth_no' => $phone->auth_no,
+                'device_setting_id' => $ds->id,
+            ];
+            DeviceSettingPhone::query()->create($data);
+        }
+        return redirect('/device');
+    }
+
+    public function restore(Request $request)
+    {
+        $id = $request->post('id', 0);
+        $trashed_device = DeviceAssignment::onlyTrashed()->find($id);
+
+        // 利用中、削除でない
+        $active_devices_count = DeviceAssignment::query()->whereNull('ended_at')->
+            where(['rest' => 0, 'device_id' => $trashed_device->device_id])->count();
+
+        if($active_devices_count == 0){
+            $trashed_device->restore();
+            $date = Carbon::now()->toDate();
+            $d = DeviceAssignment::query()->find($id);
+            $ds = DeviceSetting::query()->create([
+                'device_assignment_id' => $d->id,
+                'user_id' => Auth::user()->id,
+                'sim_id' => $d->sim->id,
+                'device_id' => $d->device->id,
+                'company_id' => $d->company->id,
+                'device_group_id' => $d->device_group_id,
+                'mount_no' => $d->mount_no,
+                'name' => $d->name,
+                'started_at' => $d->started_at,
+                'ended_at' => $d->ended_at,
+                'deleted_at' => null,
+                'restored_at' => $date,
+            ]);
+
+            $phones = Phone::query()->where('device_assignment_id', $id)->get();
+            foreach ($phones as $phone) {
+                $data = [
+                    'name' => $phone->name,
+                    'phone' => $phone->phone,
+                    'auth_no' => $phone->auth_no,
+                    'device_setting_id' => $ds->id,
+                ];
+                DeviceSettingPhone::query()->create($data);
+            }
+        }else{
+            $this->sendDeviceErrorMessage('device.restore_failed');
+        }
+
+        return redirect('/device/garbage');
+    }
+
+    private function sendDeviceErrorMessage($key){
+        throw ValidationException::withMessages([
+            'message' => [trans($key)],
+        ]);
+    }
+
+    public function import(Request $request)
+    {
+        $file = $request->file('import_file');
+        try {
+            $this->deviceImportController->import($file);
+        } catch (ImportException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        return back();
+    }
+
+    public function export(Request $request)
+    {
+        $export = new DeviceExport;
+
+        $file = 'export.xlsx';
+
+        return $export->download(
+            $file);
+    }
+
+    public function updateDeviceStatus(Request $request, $device_id)
+    {
+        $device = Device::query()->find($device_id);
+        $status = $request->input('status');
+        $error = '';
+
+        if (isset($device)) {
+            if (isset($status)) {
+                $device->status = $status;
+                $device->save();
+                
+                return [
+                    'success'   => true,
+                    'device_status' => $device->status,
+                ];
+            } else {
+                $error = "Invalid param.";
+            }
+        } else {
+            $error = "Can't find such device.";
+        }
+
+        return [
+            'success' => false,
+            'error' => $error
+        ];
+    }
+
+    public function update(Request $request)
+    {
+        
+        $name = $request->post('name', null);
+        $group_name = $request->post('group_name', null);
+        $phone_names = $request->post('phone_names', null);
+        $phones = $request->post('phones', null);
+        $clone = $request->post('clone');
+        $rest = $request->post('rest', null);
+        $camera_enabled = $request->post('camera_enabled', null);
+        $camera_name = $request->post('camera_name', null);
+        $camera_serial = $request->post('camera_serial', null);
+//        $active = $request->post('active', null);
+        $data['id'] = $request->post('id', null);
+        $data['emergency_call'] = $request->post('emergency_call', null);
+        $data['emergency_buzzer'] = $request->post('emergency_buzzer', null);
+        $data['battery_low'] = $request->post('battery_low', null);
+        $data['power_off'] = $request->post('power_off', null);
+//        $data['active'] = $active == 'on' ? 1 : 0;
+        $data['msn'] = $request->post('msn', null);
+        $data['company_name'] = $request->post('company_name', null);
+        $data['mount_no'] = $request->post('mount_no', null);
+
+       
+        if (isset($name)) $data['name'] = $name;
+
+        if (isset($rest)) $data['rest'] = $rest;
+        if (isset($camera_enabled)) $data['camera_enabled'] = $camera_enabled;
+        if (isset($camera_name)) $data['camera_name'] = $camera_name;
+        if (isset($camera_serial)) $data['camera_serial'] = $camera_serial;
+
+//        if (!$using) $data['ended_at'] = Carbon::now()->toDate();
+        $company_id = 0;
+        $company = Company::where('name', $data['company_name'])->first();
+        
+        if ( $company != null) {
+            $company_id = $company->id;
+            $companyArray = Company::getCompanyList();        
+
+            if (!in_array($company_id, $companyArray)) {
+                // this is the case when the branch admin wants to change device's company to uncontrolled company
+                return back()->with('error', 'データの更新に失敗しました。' . "会社の更新に失敗しました");
+            }
+        } else {
+            // $company_id = DeviceAssignment::query()->find($data['id'])->company->id;
+            // $data['company_name'] = DeviceAssignment::query()->find($data['id'])->company->name;
+            return back()->with('error', 'データの更新に失敗しました。' . "会社の更新に失敗しました");
+        }
+
+        if (isset($group_name))
+            $data['device_group_id'] =
+                DeviceGroup::query()
+                    ->firstOrCreate(['name' => $group_name], ['company_id' => $company_id])->id;
+        
+        $data['phones'] = [];
+        for ($i = 0; $i <= 10; $i++) {
+            $data['phones'][] = ['phone' => '', 'name' => '', 'auth_no' => ''];
+            $data['phones'][$i]['phone'] = '' . $phones[$i];
+            $data['phones'][$i]['name'] = $phone_names[$i];
+            $data['phones'][$i]['auth_no'] = $i;
+        }
+//        if (isset($phone_names)) $data['phone_names'] = $phone_names;
+//
+//        if (isset($phones)) $data['phones'] = $phones;
+
+        try {
+            $this->deviceAssignmentController->update($data['id'], $data);
+        } catch (\Exception $e) {
+            return back()->with('error', 'データの更新に失敗しました。' . $e->getMessage());
+        }
+        
+        if(isset($clone)){
+            
+            return [
+                'success' => true,
+            ];
+        }else{
+            return back();
+        }
+
+
+    }
+
+    public function searchDeviceAssignmentForClone(Request $request)
+    {
+
+        $msn = $request->get('msn');
+        $mount_no = $request->get('mount_no');
+
+        $query = DeviceAssignment::query();
+        if (isset($msn)) {
+            $query->whereHas('sim', function ($q) use ($msn) {
+                $q->where('msn', $msn);
+            });
+        }
+
+        if (isset($mount_no)) {
+            $query->where('mount_no', $mount_no);
+        }
+
+        $device_assignment = $query->with([
+            'sim',
+            'device.deviceType',
+            'deviceGroup',
+            'company',
+            'phones',
+        ])->first();
+
+        return [
+            'success' => true,
+            'data' => $device_assignment,
+        ];
+    }
+
+    public function searchCompanyName(Request $request)
+    {
+        $query = $request->get('name');
+        $company_list = [];
+        if (Auth::user()->isAdmin() && $query != '') {
+            $company_list = Company::query()
+                ->where('name', 'LIKE',  "%{$query}%")
+                ->get();
+        } else {
+            $company_list = Company::query()
+                ->where('name', 'LIKE',  "%{$query}%")
+                ->where('user_id', Auth::user()->id)
+                ->get();
+        }
+        return [
+            'success' => true,
+            'data' => $company_list,
+        ];
+    }
+}
